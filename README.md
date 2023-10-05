@@ -82,7 +82,25 @@ const styles = StyleSheet.create({
 
 [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview)
 
+[Keyboard](https://reactnative.dev/docs/keyboard)
+
+[Dimensions](https://reactnative.dev/docs/dimensions)
+
 ### [Expo Icons](https://docs.expo.dev/guides/icons/)
 
 This library is installed by default on the template project using npx create-expo-app and is part of the expo package.
 [Popular icon sets](https://icons.expo.fyi/Index)
+
+### [Expo SplashScreen](https://docs.expo.dev/versions/latest/sdk/splash-screen/)
+
+```bash
+npx expo install expo-splash-screen
+```
+
+### [Fonts](https://docs.expo.dev/develop/user-interface/fonts/)
+
+[Expo Font](https://docs.expo.dev/versions/latest/sdk/font/#installation) — a library that allows loading fonts at runtime and using them in React Native components.
+
+```bash
+npx expo install expo-font
+```
