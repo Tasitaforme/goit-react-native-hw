@@ -28,6 +28,10 @@ Expo дає змогу за відсутності MacOS тестувати до
 
 [Android Studio](https://developer.android.com/studio) — для тестування додатків(Емулятор Android)
 
+**Wipe Data** - Очистити повністю емулятор — після цієї дії буде знову встановлюватись Andoroid OS, а також необхідно буде знову інсталювати Ваш додаток.
+
+**Cold Boot Now** - “холодний запуск” - імітація запуску телефону (допомагає вирішити глюки емулятора, які інколи трапляються). По дефолту емулятор вмикається у режимі Quick Boot (якщо на живому пристрої - то це ніби ви просто розблокували телефон).
+
 [Xcode](https://apps.apple.com/ua/app/xcode/id497799835?mt=12) (для власників MacOS) — для тестування iOS додатків.
 
 ## Cтилізація
@@ -80,9 +84,38 @@ const styles = StyleSheet.create({
 });
 ```
 
-[KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview)
+### Обробка подій
 
-[Keyboard](https://reactnative.dev/docs/keyboard)
+Для того щоб відреагувати на якусь подію(наприклад, натискання на кнопку) треба до компонента додати проп, який починається з **on** і далі йде назва події у camelCase. Наприклад: onPress, onInput, onLayout.
+
+Значенням цього пропа буде коллбек, який приймає об’єкт події(event). У цьому об’єкті є властивості, які притаманні усім React-подіям(stopPropagation, preventDefault, persist, target, currentTarget) так і властивості, які мають відношення до нативної події(проп [nativeEvent](https://reactnative.dev/docs/pressevent)).
+
+> Є певний набір компонентів, який дозволяє реагувати на натискання - Button, PanResponder, Pressable, ScrollView, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, Text, TextInput, TouchableNativeFeedback, TouchableWithoutFeedback, View.
+
+### Фікс перекриття
+
+Для того щоб вирішити проблему перекриття інпуту клавіатурою використовують компонент [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview).
+
+Цей компонент має проп під назвою behavior, у який потрібно передати одне з двох значень (padding для iOS або height для Android).
+
+### Фікс зникнення клавіатури
+
+Для того щоб клавіатура зникала по кліку в будь-якому місці інтерфейсу, використовують компонент [TouchableWithoutFeedback](https://reactnative.dev/docs/touchablewithoutfeedback). Це компонент-обгортка, який вміє реагувати на події торкання екрану. Нам потрібно обгорнути в нього увесь контейнер з контентом, щоб під час кліку в будь-якому місці контейнера клавіатура зникала.
+[Keyboard](https://reactnative.dev/docs/keyboard).
+
+```js
+<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+  <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+    >
+      <TextInput placeholder="Type text" value={text} onChangeText={setText} />
+    </KeyboardAvoidingView>
+  </View>
+</TouchableWithoutFeedback>
+```
+
+> Щоб зробити поведінку однаковою і керувати переркриттям клавіатури за допомогою KeyboarAvoidingView на обох платформах - треба змінити налаштування андроід у файлі `app.json`, а саме: `{ "android": { "softwareKeyboardLayoutMode": "pan" } }` Документація цієї властивості [тут](https://docs.expo.dev/versions/latest/config/app/#softwarekeyboardlayoutmode). Документація, як додавати властивості у Expo - [тут](https://docs.expo.dev/workflow/configuration/).
 
 [Dimensions](https://reactnative.dev/docs/dimensions)
 
@@ -104,3 +137,11 @@ npx expo install expo-splash-screen
 ```bash
 npx expo install expo-font
 ```
+
+### Форми
+
+> Для роботи із великими формами буде зручно використовувати хук [useReducer](https://react.dev/reference/react/useReducer) із бібліотеки React.
+
+### Обробка дотиків
+
+[Handling Touches](https://reactnative.dev/docs/handling-touches)

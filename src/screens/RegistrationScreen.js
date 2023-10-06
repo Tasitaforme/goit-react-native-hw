@@ -1,9 +1,7 @@
 import {
   StyleSheet,
-  Text,
   View,
   ImageBackground,
-  TextInput,
   TouchableOpacity,
   Platform,
   Keyboard,
@@ -12,6 +10,10 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
+import Button from "../components/Button";
+import Link from "../components/Link";
+import TitleMain from "../components/TitleMain";
+import ValidationInput from "../components/ValidationInput";
 
 const initialState = {
   user: "",
@@ -22,18 +24,67 @@ const initialState = {
 export default function RegistrationScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [errors, setErrors] = useState({});
+
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
-  //console.log(isShowKeyboard);
+
   function handleSubmit() {
-    setIsShowKeyboard(false);
-    Keyboard.dismiss();
-    console.log(state);
-    setState(initialState);
+    keyboardHide();
+    validate();
   }
+
+  const validate = () => {
+    let isValid = true;
+    if (!state.user) {
+      handleError("Please input login", "user");
+      isValid = false;
+    } else if (state.user.length < 2) {
+      handleError("Min login length of 2", "user");
+      isValid = false;
+    }
+
+    if (!state.email) {
+      handleError("Please input email", "email");
+      isValid = false;
+    } else if (
+      !state.email.match(
+        /^(([^<>()[\]\\.,;:\s@"]+(.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/
+      )
+    ) {
+      handleError(
+        "Please input a valid email. The email address must contain the @ symbol and text after it. For example: email@mail.com",
+        "email"
+      );
+      isValid = false;
+    }
+
+    if (!state.password) {
+      handleError("Please input password", "password");
+      isValid = false;
+    } else if (state.password.length < 5) {
+      handleError("Min password length of 5", "password");
+      isValid = false;
+    }
+
+    if (isValid) {
+      console.log(state);
+      setState(initialState);
+    }
+  };
+  const handleOnchange = (text, input) => {
+    setState((prevState) => ({ ...prevState, [input]: text }));
+  };
+  const handleError = (error, input) => {
+    setErrors((prevState) => ({ ...prevState, [input]: error }));
+  };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
@@ -42,80 +93,80 @@ export default function RegistrationScreen() {
           resizeMode="cover"
           style={styles.image}
         >
-          <View style={styles.wrapper} textAlign={"center"}>
+          <View style={styles.wrapper}>
             <View style={styles.wrapperPhoto}>
-              <TouchableOpacity style={styles.btnAddPhoto} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={styles.btnAddPhoto}
+                activeOpacity={0.8}
+                onPress={() => console.log("Замінити фото")}
+              >
                 <AntDesign name="pluscircleo" size={24} color="#FF6C00" />
+                {/* <AntDesign name="closecircleo" size={24} color="#BDBDBD" /> */}
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.title}>Реєстрація</Text>
+            <TitleMain text={"Реєстрація"} marginTop={60} />
 
             <View style={styles.form}>
               <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={
-                  {
-                    //marginBottom: isShowKeyboard ? 250 : 0,
-                  }
-                }
+                style={{
+                  marginBottom: isShowKeyboard
+                    ? Platform.OS === "ios"
+                      ? 156
+                      : 128
+                    : 16,
+                }}
               >
-                <View style={styles.formInputs}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Логін"
-                    onFocus={() => setIsShowKeyboard(true)}
-                    value={state.user}
-                    onChangeText={(value) =>
-                      setState((prevState) => ({ ...prevState, user: value }))
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Адреса електронної пошти"
-                    onFocus={() => setIsShowKeyboard(true)}
-                    value={state.email}
-                    onChangeText={(value) =>
-                      setState((prevState) => ({ ...prevState, email: value }))
-                    }
-                  />
+                <ValidationInput
+                  name={"user"}
+                  placeholder="Логін"
+                  value={state.user}
+                  onFocusFunc={setIsShowKeyboard}
+                  onChangeText={(text) => handleOnchange(text, "user")}
+                  onFocus={() => handleError(null, "user")}
+                  error={errors.user}
+                  onSubmitEditing={() => keyboardHide()}
+                />
 
-                  <View>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Пароль"
-                      secureTextEntry={true}
-                      onFocus={() => setIsShowKeyboard(true)}
-                      value={state.password}
-                      onChangeText={(value) =>
-                        setState((prevState) => ({
-                          ...prevState,
-                          password: value,
-                        }))
-                      }
-                    />
-                    <Text
-                      style={styles.link}
-                      position={"absolute"}
-                      top={16}
-                      right={16}
-                    >
-                      Показати
-                    </Text>
-                  </View>
+                <ValidationInput
+                  name={"email"}
+                  placeholder="Адреса електронної пошти"
+                  value={state.email}
+                  onFocusFunc={setIsShowKeyboard}
+                  onChangeText={(text) => handleOnchange(text, "email")}
+                  onFocus={() => handleError(null, "email")}
+                  error={errors.email}
+                  onSubmitEditing={() => keyboardHide()}
+                />
+                <View>
+                  <ValidationInput
+                    name={"password"}
+                    placeholder="Пароль"
+                    value={state.password}
+                    onFocusFunc={setIsShowKeyboard}
+                    onChangeText={(text) => handleOnchange(text, "password")}
+                    onFocus={() => handleError(null, "password")}
+                    error={errors.password}
+                    onSubmitEditing={() => keyboardHide()}
+                    secureTextEntry={!showPassword}
+                  />
+                  <Link
+                    text={!showPassword ? "Показати" : "Приховати"}
+                    onPress={toggleShowPassword}
+                    position={"absolute"}
+                    bottom={32}
+                    right={16}
+                  />
                 </View>
               </KeyboardAvoidingView>
 
-              <TouchableOpacity
-                style={styles.button}
-                activeOpacity={0.8}
-                onPress={() => handleSubmit()}
-              >
-                <Text style={styles.btnTitle}>Зареєстуватися</Text>
-              </TouchableOpacity>
+              <Button text="Зареєстуватися" onPress={() => handleSubmit()} />
             </View>
-
-            <Text style={styles.link}>Вже є акаунт? Увійти</Text>
+            <Link
+              text={"Вже є акаунт? Увійти"}
+              onPress={() => console.log("Увійти")}
+            />
           </View>
         </ImageBackground>
       </View>
@@ -127,9 +178,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    // alignItems: "center",
-    //justifyContent: "flex-end",
-    //alignContent: "flex-end",
   },
   image: {
     flex: 1,
@@ -141,7 +189,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     alignItems: "center",
-    paddingBottom: 68,
+    paddingTop: 32,
+    paddingBottom: 60,
+    paddingHorizontal: 16,
+    textAlign: "center",
   },
   wrapperPhoto: {
     width: 120,
@@ -157,51 +208,9 @@ const styles = StyleSheet.create({
     bottom: 12,
     right: -12,
   },
-  title: {
-    marginTop: 92,
-    marginBottom: 32,
-    color: "#212121",
-    fontSize: 30,
-    fontWeight: "500",
-    letterSpacing: 0.3,
-  },
   form: {
-    paddingHorizontal: 16,
-    width: "100%",
-  },
-  formInputs: {
-    //flex: 1,
-    // justifyContent: "flex-end",
-  },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    backgroundColor: "#F6F6F6",
-    borderRadius: 4,
-    height: 50,
-    flexShrink: 0,
-    padding: 16,
-    fontSize: 16,
+    marginTop: 32,
     marginBottom: 16,
-  },
-  link: {
-    color: "#1B4371",
-    fontWeight: "400",
-    fontSize: 16,
-    lineHeight: 18,
-  },
-  button: {
     width: "100%",
-    padding: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Platform.OS === "ios" ? "#00bfff" : "#FF6C00",
-    borderRadius: 100,
-    marginVertical: 16,
-  },
-  btnTitle: {
-    color: "#fff",
-    fontSize: 16,
   },
 });
