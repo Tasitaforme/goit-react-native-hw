@@ -1,13 +1,52 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 
-import LoginScreen from "./src/screens/LoginScreen";
-import RegistrationScreen from "./src/screens/RegistrationScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 
-SplashScreen.preventAutoHideAsync();
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import "react-native-gesture-handler";
+
+import LoginScreen from "./src/screens/LoginScreen";
+import RegistrationScreen from "./src/screens/RegistrationScreen";
+import Home from "./src/screens/Home";
+
+//SplashScreen.preventAutoHideAsync();
+const AuthStack = createStackNavigator();
+
+const useRoute = (isAuth) => {
+  if (!isAuth) {
+    return (
+      <AuthStack.Navigator
+        initialRouteName="Login"
+        screenOptions={{ headerShown: false }}
+      >
+        <AuthStack.Screen
+          name="Login"
+          component={LoginScreen}
+          // options={{ headerShown: false }}
+        />
+        <AuthStack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          // options={{ headerShown: false }}
+        />
+        <AuthStack.Screen name="Home" component={Home} />
+      </AuthStack.Navigator>
+    );
+  }
+  return (
+    <AuthStack.Navigator>
+      <AuthStack.Screen
+        name="Home"
+        component={Home}
+        options={{ headerShown: false }}
+      />
+    </AuthStack.Navigator>
+  );
+};
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -32,12 +71,16 @@ export default function App() {
     return null;
   }
 
+  const routing = useRoute(false);
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      {/* <StatusBar style="auto" barStyle={"dark-content"} /> */}
-      <RegistrationScreen />
-      {/* <LoginScreen /> */}
-    </View>
+    <NavigationContainer>{routing}</NavigationContainer>
+
+    //  <View style={styles.container} onLayout={onLayoutRootView}>
+    //   <StatusBar style="auto" barStyle={"dark-content"} />
+    //   <RegistrationScreen />
+    //   <LoginScreen />
+    //   <PostsScreen />
+    // </View>
   );
 }
 const styles = StyleSheet.create({

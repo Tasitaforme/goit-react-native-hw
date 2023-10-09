@@ -21,7 +21,7 @@ const initialState = {
   password: "",
 };
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [errors, setErrors] = useState({});
@@ -164,8 +164,9 @@ export default function RegistrationScreen() {
               <Button text="Зареєстуватися" onPress={() => handleSubmit()} />
             </View>
             <Link
-              text={"Вже є акаунт? Увійти"}
-              onPress={() => console.log("Увійти")}
+              text={"Вже є акаунт? "}
+              underlineText={"Увійти"}
+              onPress={() => navigation.navigate("Login")}
             />
           </View>
         </ImageBackground>

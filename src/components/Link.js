@@ -1,11 +1,22 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 
-export default function Link({ text, onPress, ...addStyles }) {
+export default function Link({ text, underlineText, onPress, ...addStyles }) {
   return (
-    <Text style={{ ...styles.link, ...addStyles }} onPress={onPress}>
-      {text}
-    </Text>
+    <TouchableOpacity
+      style={{ flexDirection: "row" }}
+      activeOpacity={0.8}
+      onPress={onPress}
+    >
+      <Text style={{ ...styles.link, ...addStyles }} onPress={onPress}>
+        {text}
+      </Text>
+      {underlineText && (
+        <Text style={{ ...styles.link, textDecorationLine: "underline" }}>
+          {underlineText}
+        </Text>
+      )}
+    </TouchableOpacity>
   );
 }
 

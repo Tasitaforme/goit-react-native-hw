@@ -18,7 +18,7 @@ const initialState = {
   password: "",
 };
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [errors, setErrors] = useState({});
@@ -36,6 +36,7 @@ export default function LoginScreen() {
   function handleSubmit() {
     keyboardHide();
     validate();
+    navigation.navigate("Home");
   }
   const validate = () => {
     let isValid = true;
@@ -131,8 +132,9 @@ export default function LoginScreen() {
               <Button text="Увійти" onPress={() => handleSubmit()} />
             </View>
             <Link
-              text={"Немає акаунту? Зареєстуватися"}
-              onPress={() => console.log("Зареєстуватися")}
+              text={"Немає акаунту? "}
+              underlineText={"Зареєстуватися"}
+              onPress={() => navigation.navigate("Registration")}
             />
           </View>
         </ImageBackground>
