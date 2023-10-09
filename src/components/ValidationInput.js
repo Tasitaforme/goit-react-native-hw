@@ -64,13 +64,14 @@ const styles = StyleSheet.create({
     padding: 16,
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    lineHeight: 16,
+    lineHeight: 18,
     marginBottom: 16,
   },
   msg: {
     color: "red",
     fontSize: 12,
     fontFamily: "Roboto-Regular",
+    paddingHorizontal: 4,
     //marginTop: 7,
   },
 });

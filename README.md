@@ -317,3 +317,5 @@ npm install @react-navigation/bottom-tabs
 ```
 
 **screenOptions** — default options to use for the screens in the navigator.
+
+[Supporting safe areas](https://reactnavigation.org/docs/handling-safe-area/)

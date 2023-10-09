@@ -1,12 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import Title from "../components/Title";
-import { Feather } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-import Button from "../components/Button";
-import ButtonWithIcon from "../components/ButtonWithIcon";
-import ButtonWithIconTransparent from "../components/ButtonWithIconTransparent";
 import { StatusBar } from "expo-status-bar";
 export default function PostsScreen() {
   return (
@@ -63,35 +56,6 @@ export default function PostsScreen() {
         </View>
 
         <View flexGrow={1}></View>
-
-        {/* <View
-        style={{
-          flexDirection: "row",
-          gap: 40,
-          alignItems: "center",
-          justifyContent: "center",
-          paddingTop: 8,
-          paddingBottom: 28,
-          borderColor: "#E8E8E8",
-          borderTopWidth: 1,
-        }}
-      >
-        <ButtonWithIconTransparent
-          onPress={() => console.log("Не розумію куди направляє")}
-        >
-          <AntDesign name="appstore-o" size={24} color="#212121" />
-        </ButtonWithIconTransparent>
-
-        <ButtonWithIcon
-          onPress={() => console.log("Додати публікацію")}
-          width={72}
-        >
-          <Ionicons name="add" size={24} color="#fff" />
-        </ButtonWithIcon>
-        <ButtonWithIconTransparent onPress={() => console.log("До профілю")}>
-          <Feather name="user" size={24} color="#212121" />
-        </ButtonWithIconTransparent>
-      </View> */}
       </View>
     </>
   );

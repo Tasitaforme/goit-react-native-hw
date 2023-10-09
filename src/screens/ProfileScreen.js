@@ -234,14 +234,12 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // flexDirection: "column",
-    // justifyContent: "space-between",
     backgroundColor: "#fff",
   },
   image: {
     flex: 1,
     resizeMode: "cover",
-    // justifyContent: "flex-end",
+    justifyContent: "flex-end",
   },
   wrapper: {
     flex: 1,

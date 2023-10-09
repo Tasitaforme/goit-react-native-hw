@@ -13,6 +13,7 @@ import LoginScreen from "./src/screens/LoginScreen";
 import RegistrationScreen from "./src/screens/RegistrationScreen";
 import Home from "./src/screens/Home";
 import CommentsScreen from "./src/screens/CommentsScreen";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 //SplashScreen.preventAutoHideAsync();
 const AuthStack = createStackNavigator();
@@ -40,18 +41,20 @@ const useRoute = (isAuth) => {
     );
   }
   return (
-    <AuthStack.Navigator>
-      <AuthStack.Screen
-        name="Home"
-        component={Home}
-        options={{ headerShown: false }}
-      />
-      <AuthStack.Screen
-        name="Comments"
-        component={CommentsScreen}
-        options={{ title: "Коментарі" }}
-      />
-    </AuthStack.Navigator>
+    <SafeAreaProvider>
+      <AuthStack.Navigator>
+        <AuthStack.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }}
+        />
+        <AuthStack.Screen
+          name="Comments"
+          component={CommentsScreen}
+          options={{ title: "Коментарі" }}
+        />
+      </AuthStack.Navigator>
+    </SafeAreaProvider>
   );
 };
 
@@ -83,12 +86,6 @@ export default function App() {
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NavigationContainer>{routing}</NavigationContainer>
     </View>
-    //  <View style={styles.container} onLayout={onLayoutRootView}>
-    //   <StatusBar style="auto" barStyle={"dark-content"} />
-    //   <RegistrationScreen />
-    //   <LoginScreen />
-    //   <PostsScreen />
-    // </View>
   );
 }
 const styles = StyleSheet.create({
