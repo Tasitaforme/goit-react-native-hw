@@ -36,7 +36,6 @@ export default function LoginScreen({ navigation }) {
   function handleSubmit() {
     keyboardHide();
     validate();
-    navigation.navigate("Home");
   }
   const validate = () => {
     let isValid = true;
@@ -67,6 +66,7 @@ export default function LoginScreen({ navigation }) {
     if (isValid) {
       console.log(state);
       setState(initialState);
+      navigation.navigate("Home");
     }
   };
   const handleOnchange = (text, input) => {
