@@ -12,6 +12,7 @@ import "react-native-gesture-handler";
 import LoginScreen from "./src/screens/LoginScreen";
 import RegistrationScreen from "./src/screens/RegistrationScreen";
 import Home from "./src/screens/Home";
+import CommentsScreen from "./src/screens/CommentsScreen";
 
 //SplashScreen.preventAutoHideAsync();
 const AuthStack = createStackNavigator();
@@ -34,6 +35,7 @@ const useRoute = (isAuth) => {
           // options={{ headerShown: false }}
         />
         <AuthStack.Screen name="Home" component={Home} />
+        <AuthStack.Screen name="Comments" component={CommentsScreen} />
       </AuthStack.Navigator>
     );
   }
@@ -43,6 +45,11 @@ const useRoute = (isAuth) => {
         name="Home"
         component={Home}
         options={{ headerShown: false }}
+      />
+      <AuthStack.Screen
+        name="Comments"
+        component={CommentsScreen}
+        options={{ title: "Коментарі" }}
       />
     </AuthStack.Navigator>
   );

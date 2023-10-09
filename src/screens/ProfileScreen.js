@@ -5,13 +5,16 @@ import {
   View,
   Image,
   Text,
+  StatusBar,
+  ScrollView,
+  SafeAreaView,
 } from "react-native";
 import React from "react";
 
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
-
+import { Feather } from "@expo/vector-icons";
 import TitleMain from "../components/TitleMain";
 
 export default function ProfileScreen() {
@@ -22,66 +25,207 @@ export default function ProfileScreen() {
         resizeMode="cover"
         style={styles.image}
       >
-        <View style={styles.wrapper}>
-          <View style={styles.wrapperPhoto}>
-            <Image
-              style={{
-                borderRadius: 16,
-                flexShrink: 0,
-              }}
-              source={require("../../assets/images/logophoto.jpg")}
-              resizeMode="contain"
-            />
-            <TouchableOpacity
-              style={styles.btnAddPhoto}
-              activeOpacity={0.8}
-              onPress={() => console.log("Замінити фото")}
-            >
-              {/* <AntDesign name="pluscircleo" size={24} color="#FF6C00" /> */}
-              <AntDesign name="closecircleo" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
-          </View>
-          <TitleMain text={"Natali Romanova"} marginTop={92} />
-          <View style={{ marginBottom: 32 }}>
-            <View style={styles.wrapperItem}>
-              <Image
+        <SafeAreaView style={{ flex: 1 }}>
+          <ScrollView style={{}}>
+            <View style={styles.wrapper}>
+              <View style={styles.wrapperPhoto}>
+                <Image
+                  style={{
+                    borderRadius: 16,
+                    flexShrink: 0,
+                  }}
+                  source={require("../../assets/images/logophoto.jpg")}
+                  resizeMode="contain"
+                />
+                <TouchableOpacity
+                  style={styles.btnAddPhoto}
+                  activeOpacity={0.8}
+                  onPress={() => console.log("Замінити фото")}
+                >
+                  {/* <AntDesign name="pluscircleo" size={24} color="#FF6C00" /> */}
+                  <AntDesign name="closecircleo" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
                 style={{
-                  height: 240,
-                  borderRadius: 16,
-                  flexShrink: 0,
+                  marginTop: 22,
+                  marginLeft: "auto",
+                  opacity: 0.6,
                 }}
-                source={require("../../assets/images/bg.jpg")}
-                resizeMode="cover"
-              />
-              <Text>Ліс</Text>
+                activeOpacity={1}
+                onPress={() => console.log("Розлогінитись")}
+              >
+                <Feather name="log-out" size={24} color="#212121" />
+              </TouchableOpacity>
+              <TitleMain text={"Natali Romanova"} marginTop={46} />
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  width: "100%",
+                  marginTop: 32,
+                  flexDirection: "column",
+                  gap: 32,
                 }}
               >
-                <View style={{ flexDirection: "row", gap: 24 }}>
-                  <View style={{ flexDirection: "row", gap: 6 }}>
-                    <FontAwesome name="comment" size={24} color="#BDBDBD" />
-                    <Text>8</Text>
-                  </View>
-                  <View style={{ flexDirection: "row", gap: 6 }}>
-                    <AntDesign name="like2" size={24} color="#BDBDBD" />
-                    <Text>150</Text>
+                <View style={styles.wrapperItem}>
+                  <Image
+                    style={{
+                      height: 240,
+                      width: "100%",
+                      borderRadius: 16,
+                      flexShrink: 0,
+                    }}
+                    source={require("../../assets/images/bg.jpg")}
+                    resizeMode="cover"
+                  />
+                  <Text style={styles.itemTitle}>Ліс</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 8,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", gap: 24 }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 6,
+                          alignItems: "center",
+                        }}
+                      >
+                        <FontAwesome name="comment" size={24} color="#FF6C00" />
+                        <Text style={styles.itemText}>8</Text>
+                      </View>
+                      <View style={{ flexDirection: "row", gap: 6 }}>
+                        <AntDesign name="like2" size={24} color="#FF6C00" />
+                        <Text style={styles.itemText}>150</Text>
+                      </View>
+                    </View>
+                    <View style={{ flexDirection: "row", gap: 6 }}>
+                      <SimpleLineIcons
+                        name="location-pin"
+                        size={24}
+                        color="#FF6C00"
+                      />
+                      <Text
+                        style={{
+                          ...styles.itemText,
+                          textDecorationLine: "underline",
+                        }}
+                      >
+                        Ukraine
+                      </Text>
+                    </View>
                   </View>
                 </View>
-                <View style={{ flexDirection: "row", gap: 6 }}>
-                  <SimpleLineIcons
-                    name="location-pin"
-                    size={24}
-                    color="#BDBDBD"
+                <View style={styles.wrapperItem}>
+                  <Image
+                    style={{
+                      height: 240,
+                      width: "100%",
+                      borderRadius: 16,
+                      flexShrink: 0,
+                    }}
+                    source={require("../../assets/images/bg.jpg")}
+                    resizeMode="cover"
                   />
-                  <Text>Ukraine</Text>
+                  <Text style={styles.itemTitle}>Ліс</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 8,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", gap: 24 }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 6,
+                          alignItems: "center",
+                        }}
+                      >
+                        <FontAwesome name="comment" size={24} color="#FF6C00" />
+                        <Text style={styles.itemText}>8</Text>
+                      </View>
+                      <View style={{ flexDirection: "row", gap: 6 }}>
+                        <AntDesign name="like2" size={24} color="#FF6C00" />
+                        <Text style={styles.itemText}>150</Text>
+                      </View>
+                    </View>
+                    <View style={{ flexDirection: "row", gap: 6 }}>
+                      <SimpleLineIcons
+                        name="location-pin"
+                        size={24}
+                        color="#FF6C00"
+                      />
+                      <Text
+                        style={{
+                          ...styles.itemText,
+                          textDecorationLine: "underline",
+                        }}
+                      >
+                        Ukraine
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.wrapperItem}>
+                  <Image
+                    style={{
+                      height: 240,
+                      width: "100%",
+                      borderRadius: 16,
+                      flexShrink: 0,
+                    }}
+                    source={require("../../assets/images/bg.jpg")}
+                    resizeMode="cover"
+                  />
+                  <Text style={styles.itemTitle}>Ліс</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 8,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", gap: 24 }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 6,
+                          alignItems: "center",
+                        }}
+                      >
+                        <FontAwesome name="comment" size={24} color="#FF6C00" />
+                        <Text style={styles.itemText}>8</Text>
+                      </View>
+                      <View style={{ flexDirection: "row", gap: 6 }}>
+                        <AntDesign name="like2" size={24} color="#FF6C00" />
+                        <Text style={styles.itemText}>150</Text>
+                      </View>
+                    </View>
+                    <View style={{ flexDirection: "row", gap: 6 }}>
+                      <SimpleLineIcons
+                        name="location-pin"
+                        size={24}
+                        color="#FF6C00"
+                      />
+                      <Text
+                        style={{
+                          ...styles.itemText,
+                          textDecorationLine: "underline",
+                        }}
+                      >
+                        Ukraine
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-        </View>
+          </ScrollView>
+        </SafeAreaView>
       </ImageBackground>
     </View>
   );
@@ -123,10 +267,27 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 12,
     right: -12,
+
     borderRadius: 100,
     backgroundColor: "#fff",
   },
   wrapperItem: {
     width: "100%",
+  },
+  itemTitle: {
+    color: "#212121",
+    fontFamily: "Roboto-Medium",
+    fontWeight: "500",
+    fontSize: 16,
+    lineHeight: 16,
+    marginVertical: 8,
+    paddingHorizontal: 8,
+  },
+  itemText: {
+    color: "#212121",
+    fontFamily: "Roboto-Regular",
+    fontWeight: "400",
+    fontSize: 16,
+    lineHeight: 24,
   },
 });

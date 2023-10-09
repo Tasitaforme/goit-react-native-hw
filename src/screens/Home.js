@@ -10,8 +10,6 @@ import ProfileScreen from "./ProfileScreen";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { HeaderBackButton } from "@react-navigation/elements";
-import { CommonActions } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 
@@ -22,8 +20,8 @@ export default function Home({ navigation }) {
       screenOptions={{
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: 80,
-          paddingBottom: 24,
+          height: 56,
+          // paddingBottom: 4,
         },
         headerTitleStyle: {
           color: "#212121",
