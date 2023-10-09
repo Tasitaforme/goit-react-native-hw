@@ -80,8 +80,9 @@ export default function App() {
 
   const routing = useRoute(false);
   return (
-    <NavigationContainer>{routing}</NavigationContainer>
-
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <NavigationContainer>{routing}</NavigationContainer>
+    </View>
     //  <View style={styles.container} onLayout={onLayoutRootView}>
     //   <StatusBar style="auto" barStyle={"dark-content"} />
     //   <RegistrationScreen />
