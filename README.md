@@ -298,6 +298,9 @@ navigation.navigate("Home", {
 });
 ```
 
+[Nesting navigators](https://reactnavigation.org/docs/nesting-navigators/)
+[Options for screens](https://reactnavigation.org/docs/screen-options)
+
 ### Нижня навігація
 
 [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator).
@@ -318,4 +321,58 @@ npm install @react-navigation/bottom-tabs
 
 **screenOptions** — default options to use for the screens in the navigator.
 
+## [Камера](https://docs.expo.dev/versions/latest/sdk/camera/)
+
+```bash
+npx expo install expo-camera
+npx expo install expo-media-library
+```
+
+## [Геолокація](https://docs.expo.dev/versions/latest/sdk/location/)
+
+```bash
+npx expo install expo-location
+```
+
+```js
+import * as Location from "expo-location";
+```
+
+## [Робота з мапами](https://docs.expo.dev/versions/latest/sdk/map-view/)
+
+```bash
+npx expo install react-native-maps
+```
+
+> Для роботи мап від google необхідно зарєструвати і додати відповідні ключі. Інструкція є [тут](https://docs.expo.dev/versions/latest/sdk/map-view/#deploy-app-with-google-maps)
+
+```js
+import MapView from "react-native-maps";
+```
+
+## [BlurView](https://docs.expo.dev/versions/latest/sdk/blur-view/)
+
+```bash
+npx expo install expo-blur
+```
+
+```js
+import { BlurView } from "expo-blur";
+```
+
+## Документація
+
 [Supporting safe areas](https://reactnavigation.org/docs/handling-safe-area/)
+[react-native-gifted-chat](https://www.npmjs.com/package/react-native-gifted-chat?activeTab=readme)
+
+```bash
+npm i react-native-gifted-chat
+```
+
+```js
+import { GiftedChat } from 'react-native-gifted-chat'
+<GiftedChat wrapInSafeArea={false} ....
+```
+
+[FlatList](https://reactnative.dev/docs/flatlist)
+[Expo Image Picker](https://docs.expo.dev/tutorial/image-picker/)

@@ -10,18 +10,19 @@ import {
   SafeAreaView,
 } from "react-native";
 import React from "react";
+import COLORS from "../../const/colors";
 
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-import TitleMain from "../components/TitleMain";
+import TitleMain from "../../components/TitleMain";
 
 export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../../assets/images/bg.jpg")}
+        source={require("../../../assets/images/bg.jpg")}
         resizeMode="cover"
         style={styles.image}
       >
@@ -34,7 +35,7 @@ export default function ProfileScreen() {
                     borderRadius: 16,
                     flexShrink: 0,
                   }}
-                  source={require("../../assets/images/logophoto.jpg")}
+                  source={require("../../../assets/images/logophoto.jpg")}
                   resizeMode="contain"
                 />
                 <TouchableOpacity
@@ -74,7 +75,7 @@ export default function ProfileScreen() {
                       borderRadius: 16,
                       flexShrink: 0,
                     }}
-                    source={require("../../assets/images/bg.jpg")}
+                    source={require("../../../assets/images/bg.jpg")}
                     resizeMode="cover"
                   />
                   <Text style={styles.itemTitle}>Ліс</Text>
@@ -93,11 +94,19 @@ export default function ProfileScreen() {
                           alignItems: "center",
                         }}
                       >
-                        <FontAwesome name="comment" size={24} color="#FF6C00" />
+                        <FontAwesome
+                          name="comment"
+                          size={24}
+                          color={COLORS.accent}
+                        />
                         <Text style={styles.itemText}>8</Text>
                       </View>
                       <View style={{ flexDirection: "row", gap: 6 }}>
-                        <AntDesign name="like2" size={24} color="#FF6C00" />
+                        <AntDesign
+                          name="like2"
+                          size={24}
+                          color={COLORS.accent}
+                        />
                         <Text style={styles.itemText}>150</Text>
                       </View>
                     </View>
@@ -105,7 +114,7 @@ export default function ProfileScreen() {
                       <SimpleLineIcons
                         name="location-pin"
                         size={24}
-                        color="#FF6C00"
+                        color={COLORS.accent}
                       />
                       <Text
                         style={{
@@ -126,7 +135,7 @@ export default function ProfileScreen() {
                       borderRadius: 16,
                       flexShrink: 0,
                     }}
-                    source={require("../../assets/images/bg.jpg")}
+                    source={require("../../../assets/images/bg.jpg")}
                     resizeMode="cover"
                   />
                   <Text style={styles.itemTitle}>Ліс</Text>
@@ -145,11 +154,19 @@ export default function ProfileScreen() {
                           alignItems: "center",
                         }}
                       >
-                        <FontAwesome name="comment" size={24} color="#FF6C00" />
+                        <FontAwesome
+                          name="comment"
+                          size={24}
+                          color={COLORS.accent}
+                        />
                         <Text style={styles.itemText}>8</Text>
                       </View>
                       <View style={{ flexDirection: "row", gap: 6 }}>
-                        <AntDesign name="like2" size={24} color="#FF6C00" />
+                        <AntDesign
+                          name="like2"
+                          size={24}
+                          color={COLORS.accent}
+                        />
                         <Text style={styles.itemText}>150</Text>
                       </View>
                     </View>
@@ -157,7 +174,7 @@ export default function ProfileScreen() {
                       <SimpleLineIcons
                         name="location-pin"
                         size={24}
-                        color="#FF6C00"
+                        color={COLORS.accent}
                       />
                       <Text
                         style={{
@@ -178,7 +195,7 @@ export default function ProfileScreen() {
                       borderRadius: 16,
                       flexShrink: 0,
                     }}
-                    source={require("../../assets/images/bg.jpg")}
+                    source={require("../../../assets/images/bg.jpg")}
                     resizeMode="cover"
                   />
                   <Text style={styles.itemTitle}>Ліс</Text>
@@ -197,11 +214,19 @@ export default function ProfileScreen() {
                           alignItems: "center",
                         }}
                       >
-                        <FontAwesome name="comment" size={24} color="#FF6C00" />
+                        <FontAwesome
+                          name="comment"
+                          size={24}
+                          color={COLORS.accent}
+                        />
                         <Text style={styles.itemText}>8</Text>
                       </View>
                       <View style={{ flexDirection: "row", gap: 6 }}>
-                        <AntDesign name="like2" size={24} color="#FF6C00" />
+                        <AntDesign
+                          name="like2"
+                          size={24}
+                          color={COLORS.accent}
+                        />
                         <Text style={styles.itemText}>150</Text>
                       </View>
                     </View>
@@ -209,7 +234,7 @@ export default function ProfileScreen() {
                       <SimpleLineIcons
                         name="location-pin"
                         size={24}
-                        color="#FF6C00"
+                        color={COLORS.accent}
                       />
                       <Text
                         style={{

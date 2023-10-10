@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import React, { useState } from "react";
-
+import COLORS from "../const/colors";
 export default function ValidationInput({
   name,
   placeholder,
@@ -33,7 +33,7 @@ export default function ValidationInput({
       <TextInput
         style={
           isFocused[{ name }]
-            ? [styles.input, { borderColor: "#FF6C00" }]
+            ? [styles.input, { borderColor: COLORS.accent }]
             : styles.input
         }
         placeholder={placeholder}
@@ -72,6 +72,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Roboto-Regular",
     paddingHorizontal: 4,
-    //marginTop: 7,
   },
 });

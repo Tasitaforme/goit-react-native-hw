@@ -1,4 +1,10 @@
-import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  View,
+  Platform,
+} from "react-native";
 import React from "react";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -10,19 +16,15 @@ import ProfileScreen from "./ProfileScreen";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
 export default function Home({ navigation }) {
-  const insets = useSafeAreaInsets();
   return (
     <View
       style={{
         flex: 1,
         justifyContent: "space-between",
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
       }}
     >
       <Tab.Navigator
@@ -30,7 +32,7 @@ export default function Home({ navigation }) {
         screenOptions={{
           tabBarShowLabel: false,
           tabBarStyle: {
-            height: 52 + insets.bottom,
+            height: Platform.OS === "ios" ? 88 : 60,
           },
           headerTitleStyle: {
             color: "#212121",
@@ -42,7 +44,7 @@ export default function Home({ navigation }) {
           },
           headerTitleAlign: "center",
           headerStyle: {
-            height: 52 + insets.top,
+            height: Platform.OS === "ios" ? 88 : 60,
             borderColor: "#E8E8E8",
             borderBottomWidth: 1,
           },

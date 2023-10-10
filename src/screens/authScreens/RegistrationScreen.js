@@ -2,23 +2,26 @@ import {
   StyleSheet,
   View,
   ImageBackground,
+  TouchableOpacity,
   Platform,
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
-import Button from "../components/Button";
-import Link from "../components/Link";
-import ValidationInput from "../components/ValidationInput";
-import TitleMain from "../components/TitleMain";
+import Button from "../../components/Button";
+import Link from "../../components/Link";
+import TitleMain from "../../components/TitleMain";
+import ValidationInput from "../../components/ValidationInput";
 
 const initialState = {
+  user: "",
   email: "",
   password: "",
 };
 
-export default function LoginScreen({ navigation }) {
+export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [errors, setErrors] = useState({});
@@ -37,8 +40,16 @@ export default function LoginScreen({ navigation }) {
     keyboardHide();
     validate();
   }
+
   const validate = () => {
     let isValid = true;
+    if (!state.user) {
+      handleError("Please input login", "user");
+      isValid = false;
+    } else if (state.user.length < 2) {
+      handleError("Min login length of 2", "user");
+      isValid = false;
+    }
 
     if (!state.email) {
       handleError("Please input email", "email");
@@ -79,12 +90,23 @@ export default function LoginScreen({ navigation }) {
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <ImageBackground
-          source={require("../../assets/images/bg.jpg")}
+          source={require("../../../assets/images/bg.jpg")}
           resizeMode="cover"
           style={styles.image}
         >
           <View style={styles.wrapper}>
-            <TitleMain text={"Увійти"} />
+            <View style={styles.wrapperPhoto}>
+              <TouchableOpacity
+                style={styles.btnAddPhoto}
+                activeOpacity={0.8}
+                onPress={() => console.log("Замінити фото")}
+              >
+                <AntDesign name="pluscircleo" size={24} color="#FF6C00" />
+                {/* <AntDesign name="closecircleo" size={24} color="#BDBDBD" /> */}
+              </TouchableOpacity>
+            </View>
+
+            <TitleMain text={"Реєстрація"} marginTop={60} />
 
             <View style={styles.form}>
               <KeyboardAvoidingView
@@ -97,6 +119,17 @@ export default function LoginScreen({ navigation }) {
                     : 16,
                 }}
               >
+                <ValidationInput
+                  name={"user"}
+                  placeholder="Логін"
+                  value={state.user}
+                  onFocusFunc={setIsShowKeyboard}
+                  onChangeText={(text) => handleOnchange(text, "user")}
+                  onFocus={() => handleError(null, "user")}
+                  error={errors.user}
+                  onSubmitEditing={() => keyboardHide()}
+                />
+
                 <ValidationInput
                   name={"email"}
                   placeholder="Адреса електронної пошти"
@@ -129,12 +162,12 @@ export default function LoginScreen({ navigation }) {
                 </View>
               </KeyboardAvoidingView>
 
-              <Button text="Увійти" onPress={() => handleSubmit()} />
+              <Button text="Зареєстуватися" onPress={() => handleSubmit()} />
             </View>
             <Link
-              text={"Немає акаунту? "}
-              underlineText={"Зареєстуватися"}
-              onPress={() => navigation.navigate("Registration")}
+              text={"Вже є акаунт? "}
+              underlineText={"Увійти"}
+              onPress={() => navigation.navigate("Login")}
             />
           </View>
         </ImageBackground>
