@@ -13,15 +13,24 @@ import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { useSelector } from "react-redux";
 
 export default function PostsScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
+  const { user, userPhoto, email } = useSelector((state) => state.auth);
+
+  const getAllPost = () => {
+    onSnapshot(collection(db, "posts"), (data) => {
+      const allPosts = data.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setPosts(allPosts);
+    });
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getAllPost();
+  }, []);
 
   return (
     <>
@@ -36,8 +45,7 @@ export default function PostsScreen({ route, navigation }) {
             flexDirection: "row",
             alignItems: "center",
             gap: 8,
-            paddingVertical: 20,
-            // paddingBottom: 0,
+            paddingVertical: 12,
             paddingHorizontal: 16,
           }}
         >
@@ -48,7 +56,11 @@ export default function PostsScreen({ route, navigation }) {
               borderRadius: 16,
               flexShrink: 0,
             }}
-            source={require("../../../assets/images/logophoto.jpg")}
+            source={
+              userPhoto
+                ? { uri: userPhoto }
+                : require("../../../assets/images/dummy-user-photo.png")
+            }
             resizeMode="cover"
           />
           <View style={{ flexDirection: "column", gap: 2 }}>
@@ -61,7 +73,7 @@ export default function PostsScreen({ route, navigation }) {
                 lineHeight: 14,
               }}
             >
-              Natali Romanova
+              {user}
             </Text>
             <Text
               style={{
@@ -72,7 +84,7 @@ export default function PostsScreen({ route, navigation }) {
                 lineHeight: 12,
               }}
             >
-              email@example.com
+              {email}
             </Text>
           </View>
         </View>
@@ -87,9 +99,9 @@ export default function PostsScreen({ route, navigation }) {
         >
           <FlatList
             data={posts}
-            keyExtractor={(item, indx) => indx.toString()}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={{ width: "100%", marginBottom: 32 }}>
+              <View style={{ width: "100%", marginBottom: 18, flexGrow: 1 }}>
                 <Image
                   style={{
                     height: 240,
@@ -106,11 +118,17 @@ export default function PostsScreen({ route, navigation }) {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     paddingHorizontal: 8,
+                    alignItems: "center",
                   }}
                 >
                   <TouchableOpacity
                     style={{ flexDirection: "row", gap: 24 }}
-                    onPress={() => navigation.navigate("Comments")}
+                    onPress={() =>
+                      navigation.navigate("Comments", {
+                        postId: item.id,
+                        photo: item.photo,
+                      })
+                    }
                   >
                     <View
                       style={{
@@ -132,7 +150,10 @@ export default function PostsScreen({ route, navigation }) {
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={{ flexDirection: "row", gap: 6 }}
+                    style={{
+                      flexDirection: "row",
+                      gap: 6,
+                    }}
                     onPress={() => {
                       navigation.navigate("Map", {
                         location: item.coordinates,
@@ -174,7 +195,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
     lineHeight: 16,
-    marginVertical: 8,
+    marginTop: 12,
+    marginBottom: 4,
     paddingHorizontal: 8,
   },
   itemText: {

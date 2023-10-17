@@ -2,6 +2,11 @@
 
 [ES7+ React/Redux/React-Native snippets](https://github.com/ults-io/vscode-react-javascript-snippets/blob/HEAD/docs/Snippets.md#react-native-components)
 
+Шляхи створення додатків:
+
+1. за допомогою React Native CLI (або ж “чистий” реакт нейтів);
+1. за допомогою Expo (набір інструментів для швидкої розробки за допомогою React Native).
+
 ## [Expo](https://expo.dev/)
 
 Expo — набір інструментів для швидкої розробки за допомогою React Native.
@@ -360,8 +365,10 @@ npx expo install expo-blur
 import { BlurView } from "expo-blur";
 ```
 
-## Документація
+### Документація
 
+[FlatList](https://reactnative.dev/docs/flatlist)
+[Expo Image Picker](https://docs.expo.dev/tutorial/image-picker/)
 [Supporting safe areas](https://reactnavigation.org/docs/handling-safe-area/)
 [react-native-gifted-chat](https://www.npmjs.com/package/react-native-gifted-chat?activeTab=readme)
 
@@ -370,9 +377,62 @@ npm i react-native-gifted-chat
 ```
 
 ```js
-import { GiftedChat } from 'react-native-gifted-chat'
-<GiftedChat wrapInSafeArea={false} ....
+import { GiftedChat } from "react-native-gifted-chat";
+<GiftedChat wrapInSafeArea={false}></GiftedChat>;
 ```
 
-[FlatList](https://reactnative.dev/docs/flatlist)
-[Expo Image Picker](https://docs.expo.dev/tutorial/image-picker/)
+## [Redux](https://redux.js.org/introduction/getting-started) та [redux-persist](https://redux.js.org/usage/migrating-to-modern-redux#store-setup-with-configurestore)
+
+```bash
+npm install @reduxjs/toolkit react-redux redux-persist
+npx expo install @react-native-async-storage/async-storage
+```
+
+```js
+import { Provider } from "react-redux";
+import store from "./src/redux/store";
+
+return (
+  <Provider store={store}>
+    <NavigationContainer>... </NavigationContainer>
+  </Provider>
+);
+```
+
+[Redux Toolkit Quick Start](https://redux.js.org/tutorials/quick-start)
+
+## [Firebase](https://console.firebase.google.com/)
+
+[Бібліотека Firebase](https://www.npmjs.com/package/firebase)
+
+```bash
+npx expo install firebase
+```
+
+> Якщо встановлена версія firebase 9.7.0 або вище - необхідно додатково налаштувати Expo. Для цього треба запустити команду нижче у терміналі. Вона створить і привʼяже до експо файл metro.config.js
+
+```bash
+npx expo customize metro.config.js
+```
+
+> React Native CLI + firebase = [React Native Firebase](https://rnfirebase.io/)
+
+[Firebase Authentication](https://firebase.google.com/docs/auth?authuser=0&hl=en)
+[updateProfile](https://firebase.google.com/docs/auth/web/manage-users#update_a_users_profile)
+
+## [Moment.js](https://momentjs.com/)
+
+Parse, validate, manipulate, and display dates and times in JavaScript.
+
+```bash
+npm install moment
+```
+
+```js
+import moment from "moment";
+import "moment/locale/uk";
+
+moment().format();
+```
+
+[Loading locales in NodeJS](https://momentjs.com/docs/#/i18n/loading-into-nodejs/)

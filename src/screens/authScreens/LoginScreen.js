@@ -12,6 +12,8 @@ import Button from "../../components/Button";
 import Link from "../../components/Link";
 import ValidationInput from "../../components/ValidationInput";
 import TitleMain from "../../components/TitleMain";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/auth/authOperations";
 
 const initialState = {
   email: "",
@@ -19,6 +21,8 @@ const initialState = {
 };
 
 export default function LoginScreen({ navigation }) {
+  const dispatch = useDispatch();
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [errors, setErrors] = useState({});
@@ -58,15 +62,16 @@ export default function LoginScreen({ navigation }) {
     if (!state.password) {
       handleError("Please input password", "password");
       isValid = false;
-    } else if (state.password.length < 5) {
-      handleError("Min password length of 5", "password");
+    } else if (state.password.length < 6) {
+      handleError("Min password length of 6", "password");
       isValid = false;
     }
 
     if (isValid) {
       console.log(state);
+      dispatch(login(state));
       setState(initialState);
-      navigation.navigate("Home");
+      // navigation.navigate("Home");
     }
   };
   const handleOnchange = (text, input) => {

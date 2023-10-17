@@ -9,91 +9,253 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   Keyboard,
+  FlatList,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import COLORS from "../../const/colors";
+import moment from "moment";
+import "moment/locale/uk";
 import { AntDesign } from "@expo/vector-icons";
 import ButtonWithIcon from "../../components/ButtonWithIcon";
+import { useSelector } from "react-redux";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../../firebase/config";
+// const initialState = {
+//   comment: "",
+//   userIcon: "",
+//   dataTime: "",
+// };
 
-const initialState = {
-  comment: "",
-  userIcon: "",
-  dataTime: "",
-};
+export default function CommentsScreen({ route }) {
+  const { postId, photo } = route.params;
+  const { userId, user, userPhoto } = useSelector((state) => state.auth);
 
-export default function CommentsScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [state, setState] = useState(initialState);
+  const [allComments, setAllComments] = useState([]);
+  const [comment, setComment] = useState("");
 
-  const handleOnchange = (text, input) => {
-    setState((prevState) => ({ ...prevState, [input]: text }));
-  };
+  // const handleOnchange = (text, input) => {
+  //   setComment((prevState) => ({ ...prevState, [input]: text }));
+  // };
+
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
+
+  const createComment = async () => {
+    if (!comment) {
+      return;
+    }
+    try {
+      await addDoc(collection(db, "posts", postId, "comments"), {
+        comment,
+        owner: { userId, user, userPhoto },
+        createdAt: new Date().getTime(),
+      });
+    } catch (error) {
+      console.log(error.code);
+    }
+  };
+
   function handleSubmit() {
     keyboardHide();
-    console.log(state);
-    setState(initialState);
+    console.log(comment);
+    createComment();
+    setComment("");
   }
+  useEffect(() => {
+    onSnapshot(collection(db, "posts", postId, "comments"), (data) => {
+      const allComments = data.docs.map((doc) => ({
+        commentId: doc.id,
+        ...doc.data(),
+      }));
+
+      setAllComments(allComments);
+      console.log(allComments);
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={{ flexGrow: 1 }}>
-          <Image
-            style={{
-              height: 240,
-              width: "100%",
-              borderRadius: 16,
-            }}
-            source={require("../../../assets/images/bg.jpg")}
-            resizeMode="cover"
-          />
-
-          <View
+        <View>
+          <FlatList
+            data={allComments}
+            keyExtractor={(item) => item.commentId}
             style={{
               flexDirection: "column",
-              gap: 24,
-              marginTop: 32,
+              marginTop: 8,
               width: "100%",
             }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "flex-start",
-              }}
-            >
+            ListHeaderComponent={
               <Image
                 style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 50,
-                  marginRight: 16,
-                  marginTop: 16,
+                  height: 240,
+                  width: "100%",
+                  borderRadius: 16,
+                  marginBottom: 12,
                 }}
-                source={require("../../../assets/images/logophoto.jpg")}
+                source={{ uri: photo }}
                 resizeMode="cover"
               />
+            }
+            renderItem={({ item }) => (
               <View
                 style={{
-                  backgroundColor: "rgba(0, 0, 0, 0.03)",
-                  borderRadius: 6,
-                  paddingHorizontal: 16,
-                  paddingVertical: 16,
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  marginBottom: 12,
                 }}
               >
-                <Text style={styles.text}>
-                  Really love your most recent photo. I’ve been trying to
-                  capture the same thing for a few months and would love some
-                  tips!
-                </Text>
-                <Text style={styles.subText}>09 червня, 2020 | 08:40</Text>
+                <Image
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 50,
+                    marginRight: 16,
+                    marginTop: 16,
+                  }}
+                  source={
+                    item.owner.userPhoto
+                      ? { uri: item.owner.userPhoto }
+                      : require("../../../assets/images/dummy-user-photo.png")
+                  }
+                  resizeMode="cover"
+                />
+                <View
+                  style={{
+                    backgroundColor: "rgba(0, 0, 0, 0.03)",
+                    borderRadius: 6,
+                    paddingHorizontal: 12,
+                    paddingVertical: 12,
+                    flexGrow: 1,
+                  }}
+                >
+                  <Text style={styles.text}>{item.comment}</Text>
+                  <Text style={styles.subText}>
+                    {moment(item.createdAt)
+                      .locale("uk")
+                      .format("DD MMMM, YYYY | HH:mm")}
+                  </Text>
+                </View>
               </View>
-            </View>
-            <View
+            )}
+            ListFooterComponent={
+              <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{
+                  marginBottom: isShowKeyboard
+                    ? Platform.OS === "ios"
+                      ? 300
+                      : 0
+                    : 0,
+                }}
+              >
+                <View style={{ marginTop: 16 }}>
+                  <TextInput
+                    style={{
+                      fontFamily: "Roboto-Regular",
+                      fontWeight: "400",
+                      fontSize: 16,
+                      lineHeight: 18,
+                      borderRadius: 50,
+                      borderColor: "#E8E8E8",
+                      backgroundColor: "#F6F6F6",
+                      paddingVertical: 16,
+                      paddingLeft: 16,
+                      height: 50,
+                    }}
+                    name={"comment"}
+                    placeholder="Коментувати..."
+                    value={comment}
+                    onFocus={() => setIsShowKeyboard(true)}
+                    onSubmitEditing={() => keyboardHide()}
+                    onChangeText={(text) => setComment(text)}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      padding: 8,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 100,
+                      flexShrink: 0,
+                      width: 40,
+                      height: 40,
+                      position: "absolute",
+                      top: 4,
+                      right: 8,
+                      backgroundColor: COLORS.accent,
+                    }}
+                    activeOpacity={0.9}
+                    onPress={() => handleSubmit()}
+                  >
+                    <AntDesign name="arrowup" size={24} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+              </KeyboardAvoidingView>
+            }
+          />
+          {/* {allComments &&
+            allComments.map(({ commentId, comment, owner, createdAt }) => (
+              <View
+                key={commentId}
+                style={{
+                  flexDirection: "column",
+                  marginTop: 20,
+                  width: "100%",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "flex-start",
+                    marginBottom: 12,
+                  }}
+                >
+                  <Image
+                    style={{
+                      width: 30,
+                      height: 30,
+                      borderRadius: 50,
+                      marginRight: 16,
+                      marginTop: 16,
+                    }}
+                    source={
+                      owner.userPhoto
+                        ? { uri: owner.userPhoto }
+                        : require("../../../assets/images/dummy-user-photo.png")
+                    }
+                    resizeMode="cover"
+                  />
+                  <View
+                    style={{
+                      backgroundColor: "rgba(0, 0, 0, 0.03)",
+                      borderRadius: 6,
+                      paddingHorizontal: 12,
+                      paddingVertical: 12,
+                      flexGrow: 1,
+                    }}
+                  >
+                    <Text style={styles.text}>{comment}</Text>
+                    <Text style={styles.subText}>
+                      {moment(createdAt)
+                        .locale("uk")
+                        .format("DD MMMM, YYYY | HH:mm")}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))} */}
+
+          {/* <View
               style={{
                 flexDirection: "row",
                 alignItems: "flex-start",
@@ -127,61 +289,8 @@ export default function CommentsScreen() {
                 </Text>
                 <Text style={styles.subText}>09 червня, 2020 | 08:40</Text>
               </View>
-            </View>
-          </View>
-        </ScrollView>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{
-            marginBottom: isShowKeyboard
-              ? Platform.OS === "ios"
-                ? 300
-                : 38
-              : 0,
-          }}
-        >
-          <View style={{ marginTop: 16 }}>
-            <TextInput
-              style={{
-                fontFamily: "Roboto-Regular",
-                fontWeight: "400",
-                fontSize: 16,
-                lineHeight: 18,
-                borderRadius: 50,
-                borderColor: "#E8E8E8",
-                backgroundColor: "#F6F6F6",
-                paddingVertical: 16,
-                paddingLeft: 16,
-                height: 50,
-              }}
-              name={"comment"}
-              placeholder="Коментувати..."
-              value={state.comment}
-              onFocus={() => setIsShowKeyboard(true)}
-              onSubmitEditing={() => keyboardHide()}
-              onChangeText={(text) => handleOnchange(text, "comment")}
-            />
-            <TouchableOpacity
-              style={{
-                padding: 8,
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 100,
-                flexShrink: 0,
-                width: 40,
-                height: 40,
-                position: "absolute",
-                top: 4,
-                right: 8,
-                backgroundColor: COLORS.accent,
-              }}
-              activeOpacity={0.9}
-              onPress={() => handleSubmit()}
-            >
-              <AntDesign name="arrowup" size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
+            </View> */}
+        </View>
       </SafeAreaView>
     </View>
   );
@@ -191,8 +300,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 32,
-    paddingBottom: 60,
+    paddingTop: 8,
+    paddingBottom: 40,
     paddingHorizontal: 16,
   },
   text: {
@@ -201,7 +310,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 16,
     color: "#212121",
-    width: "40%",
+    width: "auto",
   },
   subText: {
     fontFamily: "Roboto-Regular",
@@ -209,7 +318,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 12,
     color: "#BDBDBD",
-    marginTop: 4,
+    marginTop: 8,
     // alignSelf: "flex-end",
   },
 });

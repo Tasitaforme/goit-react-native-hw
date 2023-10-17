@@ -27,6 +27,10 @@ import { AntDesign } from "@expo/vector-icons";
 import ButtonWithIcon from "../../components/ButtonWithIcon";
 import Button from "../../components/Button";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { db, storage } from "../../firebase/config";
+import { addDoc, collection } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const initialState = {
   photo: "",
@@ -35,6 +39,8 @@ const initialState = {
 };
 
 export default function CreatePostsScreen({ navigation }) {
+  const { userId, user } = useSelector((state) => state.auth);
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isDisabledBtn, setIsDisabledBtn] = useState(true);
   const [state, setState] = useState(initialState);
@@ -42,6 +48,7 @@ export default function CreatePostsScreen({ navigation }) {
   const handleOnchange = (text, input) => {
     setState((prevState) => ({ ...prevState, [input]: text }));
   };
+
   useEffect(() => {
     if (!state.title || !state.location || !state.photo) {
       setIsDisabledBtn(true);
@@ -55,7 +62,7 @@ export default function CreatePostsScreen({ navigation }) {
   // const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [location, setLocation] = useState(null);
+  const [geoLocation, setGeoLocation] = useState(null);
   const cameraRef = useRef();
 
   useEffect(() => {
@@ -73,6 +80,13 @@ export default function CreatePostsScreen({ navigation }) {
         console.log("Permission to access location was denied");
       }
       setHasPermissionLoc(status === "granted");
+
+      const location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords?.latitude,
+        longitude: location.coords?.longitude,
+      };
+      setGeoLocation(coords);
     })();
   }, []);
 
@@ -80,10 +94,10 @@ export default function CreatePostsScreen({ navigation }) {
     return <View />;
   }
   if (hasPermissionCam === false) {
-    return <Text>No access to camera</Text>;
+    return alert("No access to camera.");
   }
   if (hasPermissionLoc === false) {
-    return <Text>No access to location</Text>;
+    return alert("No access to location.");
   }
 
   const takePhoto = async () => {
@@ -92,12 +106,7 @@ export default function CreatePostsScreen({ navigation }) {
       const { uri } = await cameraRef.current.takePictureAsync(options);
       setPhoto(uri);
       handleOnchange(uri, "photo");
-      const location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords?.latitude,
-        longitude: location.coords?.longitude,
-      };
-      setLocation(coords);
+
       //await MediaLibrary.createAssetAsync(uri);
       // console.log(coords);
     }
@@ -116,13 +125,49 @@ export default function CreatePostsScreen({ navigation }) {
     }
   };
 
+  const uploadPostToServer = async ({ title, location }) => {
+    try {
+      const photo = await uploadPhotoToServer();
+
+      await addDoc(collection(db, "posts"), {
+        photo,
+        title,
+        location,
+        coordinates: geoLocation,
+        owner: { userId, user },
+        createdAt: new Date().getTime(),
+      });
+    } catch (error) {
+      console.log("error", error.message);
+      throw error;
+    }
+  };
+
+  const uploadPhotoToServer = async () => {
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const uniqPostId = Date.now().toString();
+
+      const imageRef = ref(storage, `postImage/${uniqPostId}`);
+      await uploadBytes(imageRef, file);
+
+      const processedPhoto = await getDownloadURL(imageRef);
+      return processedPhoto;
+    } catch (error) {
+      console.log("error", error.message);
+    }
+  };
+
   function handleSubmit() {
     if (!state.title || !state.location || !state.photo) {
-      alert("You did not select any image.");
+      alert("You did not fill all information.");
     } else {
-      navigation.navigate("Posts", { ...state, coordinates: location });
+      uploadPostToServer(state);
+      navigation.navigate("Posts", { ...state });
       setState(initialState);
       setPhoto(null);
+      setGeoLocation(null);
     }
   }
   return (

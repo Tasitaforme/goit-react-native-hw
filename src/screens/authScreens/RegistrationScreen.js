@@ -7,23 +7,34 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  Image,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import Button from "../../components/Button";
 import Link from "../../components/Link";
 import TitleMain from "../../components/TitleMain";
 import ValidationInput from "../../components/ValidationInput";
+import { useDispatch } from "react-redux";
+import { register } from "../../redux/auth/authOperations";
+import COLORS from "../../const/colors";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase/config";
 
 const initialState = {
   user: "",
   email: "",
   password: "",
+  userPhoto: "",
 };
 
 export default function RegistrationScreen({ navigation }) {
+  const dispatch = useDispatch();
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [photo, setPhoto] = useState(null);
   const [errors, setErrors] = useState({});
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,10 +47,10 @@ export default function RegistrationScreen({ navigation }) {
     Keyboard.dismiss();
   };
 
-  function handleSubmit() {
-    keyboardHide();
-    validate();
-  }
+  // function handleSubmit() {
+  //   keyboardHide();
+  //   validate();
+  // }
 
   const validate = () => {
     let isValid = true;
@@ -69,22 +80,69 @@ export default function RegistrationScreen({ navigation }) {
     if (!state.password) {
       handleError("Please input password", "password");
       isValid = false;
-    } else if (state.password.length < 5) {
-      handleError("Min password length of 5", "password");
+    } else if (state.password.length < 6) {
+      handleError("Min password length of 6", "password");
       isValid = false;
     }
 
-    if (isValid) {
-      console.log(state);
-      setState(initialState);
-      navigation.navigate("Home");
-    }
+    // if (isValid) {
+    //   console.log(state);
+
+    //   // dispatch(register(state));
+    //   // setState(initialState);
+    //   // setPhoto(null);
+    //   // navigation.navigate("Home");
+    // }
   };
   const handleOnchange = (text, input) => {
     setState((prevState) => ({ ...prevState, [input]: text }));
   };
   const handleError = (error, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
+  };
+  //!++++++++++++++++++++++++++++
+  const pickPhoto = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+      // handleOnchange(result.assets[0].uri, "userPhoto");
+    } else {
+      alert("You did not select any image.");
+    }
+  };
+
+  const uploadPhotoToServer = async () => {
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const uniqPostId = Date.now().toString();
+
+      const imageRef = ref(storage, `userImage/${uniqPostId}`);
+      await uploadBytes(imageRef, file);
+
+      const processedPhoto = await getDownloadURL(imageRef);
+      return processedPhoto;
+    } catch (error) {
+      console.log("error", error.message);
+    }
+  };
+
+  const handleSubmit = async () => {
+    keyboardHide();
+    const userPhoto = photo ? await uploadPhotoToServer() : "";
+    // console.log(userPhoto);
+    state.userPhoto = userPhoto;
+    validate();
+    dispatch(register(state));
+    // console.log("after validate", state);
+    // console.log(state.user, state.email, state.password, userPhoto);
+    // dispatch(register(state.user, state.email, state.password, userPhoto));
+    setState(initialState);
+    setPhoto(null);
   };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -96,14 +154,42 @@ export default function RegistrationScreen({ navigation }) {
         >
           <View style={styles.wrapper}>
             <View style={styles.wrapperPhoto}>
-              <TouchableOpacity
-                style={styles.btnAddPhoto}
-                activeOpacity={0.8}
-                onPress={() => console.log("Замінити фото")}
-              >
-                <AntDesign name="pluscircleo" size={24} color="#FF6C00" />
-                {/* <AntDesign name="closecircleo" size={24} color="#BDBDBD" /> */}
-              </TouchableOpacity>
+              {photo && (
+                <Image
+                  source={{ uri: photo }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    position: "absolute",
+                    borderRadius: 16,
+                  }}
+                />
+              )}
+
+              {!photo && (
+                <TouchableOpacity
+                  style={styles.btnAddPhoto}
+                  activeOpacity={0.8}
+                  onPress={pickPhoto}
+                >
+                  <AntDesign
+                    name="pluscircleo"
+                    size={24}
+                    color={COLORS.accent}
+                  />
+                </TouchableOpacity>
+              )}
+              {photo && (
+                <TouchableOpacity
+                  style={styles.btnAddPhoto}
+                  activeOpacity={0.8}
+                  onPress={() => setPhoto(null)}
+                >
+                  <AntDesign name="closecircleo" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+              )}
             </View>
 
             <TitleMain text={"Реєстрація"} marginTop={60} />

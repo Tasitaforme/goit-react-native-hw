@@ -2,7 +2,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -16,8 +16,11 @@ import Home from "./src/screens/mainScreens/Home";
 
 import CommentsScreen from "./src/screens/nestedScreens/CommentsScreen";
 import MapScreen from "./src/screens/nestedScreens/MapScreen";
+import { Provider } from "react-redux";
+import { store } from "./src/redux/store";
+import Main from "./src/components/Main/Main";
 
-//SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -44,60 +47,10 @@ export default function App() {
   }
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Group screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Registration" component={RegistrationScreen} />
-          </Stack.Group>
-
-          <Stack.Group
-            screenOptions={({ navigation }) => ({
-              headerLeft: () => (
-                <TouchableOpacity
-                  style={{ paddingLeft: 16, opacity: 0.6 }}
-                  activeOpacity={1}
-                  onPress={navigation.goBack}
-                >
-                  <Ionicons name="arrow-back" size={24} color="#212121" />
-                </TouchableOpacity>
-              ),
-              headerTitleStyle: {
-                color: "#212121",
-                fontFamily: "Roboto-Medium",
-                fontWeight: "500",
-                fontSize: 17,
-                lineHeight: 22,
-                letterSpacing: -0.4,
-              },
-              headerTitleAlign: "center",
-              headerStyle: {
-                height: Platform.OS === "ios" ? 88 : 60,
-                borderColor: "#E8E8E8",
-                borderBottomWidth: 1,
-              },
-            })}
-          >
-            <Stack.Screen
-              name="Comments"
-              component={CommentsScreen}
-              options={{ title: "Коментарі" }}
-            />
-            <Stack.Screen
-              name="Map"
-              component={MapScreen}
-              options={{ title: "Мапа" }}
-            />
-          </Stack.Group>
-        </Stack.Navigator>
-      </NavigationContainer>
-    </View>
+    <Provider store={store}>
+      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <Main />
+      </View>
+    </Provider>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

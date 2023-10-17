@@ -16,10 +16,13 @@ import ProfileScreen from "./ProfileScreen";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/auth/authOperations";
 
 const Tab = createBottomTabNavigator();
 
 export default function Home({ navigation }) {
+  const dispatch = useDispatch();
   return (
     <View
       style={{
@@ -60,7 +63,7 @@ export default function Home({ navigation }) {
               <TouchableOpacity
                 style={{ paddingRight: 16, opacity: 0.6 }}
                 activeOpacity={1}
-                onPress={() => console.log("Розлогінитись")}
+                onPress={() => dispatch(logout())}
               >
                 <Feather name="log-out" size={24} color="#212121" />
               </TouchableOpacity>
@@ -90,7 +93,8 @@ export default function Home({ navigation }) {
               <TouchableOpacity
                 style={{ paddingLeft: 16, opacity: 0.6 }}
                 activeOpacity={1}
-                onPress={() => navigation.navigate("Posts")}
+                // onPress={() => navigation.navigate("Posts")}
+                onPress={() => navigation.goBack()}
               >
                 <Ionicons name="arrow-back" size={24} color="#212121" />
               </TouchableOpacity>
@@ -116,15 +120,6 @@ export default function Home({ navigation }) {
   );
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     flexDirection: "column",
-//     justifyContent: "space-between",
-//     backgroundColor: "#fff",
-//     marginTop: 44,
-//   },
-// });
 const styles = StyleSheet.create({
   button: {
     padding: 8,
