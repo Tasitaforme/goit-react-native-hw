@@ -68,7 +68,6 @@ export default function LoginScreen({ navigation }) {
     }
 
     if (isValid) {
-      console.log(state);
       dispatch(login(state));
       setState(initialState);
       // navigation.navigate("Home");

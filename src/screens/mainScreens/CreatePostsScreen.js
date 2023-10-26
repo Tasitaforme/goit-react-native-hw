@@ -22,15 +22,14 @@ import COLORS from "../../const/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-// import { Fontisto } from "@expo/vector-icons";
 
 import ButtonWithIcon from "../../components/ButtonWithIcon";
 import Button from "../../components/Button";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { db, storage } from "../../firebase/config";
+import { db } from "../../firebase/config";
 import { addDoc, collection } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { uploadPhotoToServer } from "../../firebase/requests";
 
 const initialState = {
   photo: "",
@@ -59,7 +58,6 @@ export default function CreatePostsScreen({ navigation }) {
 
   const [hasPermissionCam, setHasPermissionCam] = useState(null);
   const [hasPermissionLoc, setHasPermissionLoc] = useState(null);
-  // const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [geoLocation, setGeoLocation] = useState(null);
@@ -68,7 +66,6 @@ export default function CreatePostsScreen({ navigation }) {
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      // await MediaLibrary.requestPermissionsAsync();
       setHasPermissionCam(status === "granted");
     })();
   }, []);
@@ -106,14 +103,12 @@ export default function CreatePostsScreen({ navigation }) {
       const { uri } = await cameraRef.current.takePictureAsync(options);
       setPhoto(uri);
       handleOnchange(uri, "photo");
-
-      //await MediaLibrary.createAssetAsync(uri);
-      // console.log(coords);
     }
   };
   const pickPhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
+      aspect: [4, 3],
       quality: 1,
     });
 
@@ -121,16 +116,14 @@ export default function CreatePostsScreen({ navigation }) {
       setPhoto(result.assets[0].uri);
       handleOnchange(result.assets[0].uri, "photo");
     } else {
-      alert("You did not select any image.");
+      alert("Ви не вибрали жодного зображення");
     }
   };
 
   const uploadPostToServer = async ({ title, location }) => {
     try {
-      const photo = await uploadPhotoToServer();
-
       await addDoc(collection(db, "posts"), {
-        photo,
+        photo: await uploadPhotoToServer(photo, "postImage"),
         title,
         location,
         coordinates: geoLocation,
@@ -143,28 +136,14 @@ export default function CreatePostsScreen({ navigation }) {
     }
   };
 
-  const uploadPhotoToServer = async () => {
-    try {
-      const response = await fetch(photo);
-      const file = await response.blob();
-      const uniqPostId = Date.now().toString();
-
-      const imageRef = ref(storage, `postImage/${uniqPostId}`);
-      await uploadBytes(imageRef, file);
-
-      const processedPhoto = await getDownloadURL(imageRef);
-      return processedPhoto;
-    } catch (error) {
-      console.log("error", error.message);
-    }
-  };
-
   function handleSubmit() {
     if (!state.title || !state.location || !state.photo) {
-      alert("You did not fill all information.");
+      alert("Ви не заповнили всю інформацію");
     } else {
       uploadPostToServer(state);
-      navigation.navigate("Posts", { ...state });
+      navigation.goBack();
+      //navigation.navigate("Profile");
+      // navigation.navigate("Posts", { ...state });
       setState(initialState);
       setPhoto(null);
       setGeoLocation(null);
@@ -303,7 +282,7 @@ export default function CreatePostsScreen({ navigation }) {
                       borderBottomWidth: 1,
                       borderColor: "#E8E8E8",
                     }}
-                    placeholder="Назва..."
+                    placeholder="Коротка назва для фото..."
                     placeholderTextColor={"#BDBDBD"}
                     value={state.title}
                     onChangeText={(text) => handleOnchange(text, "title")}
@@ -332,7 +311,7 @@ export default function CreatePostsScreen({ navigation }) {
                       borderBottomWidth: 1,
                       borderColor: "#E8E8E8",
                     }}
-                    placeholder="Місцевість..."
+                    placeholder="Місто..."
                     placeholderTextColor={"#BDBDBD"}
                     value={state.location}
                     onChangeText={(text) => handleOnchange(text, "location")}
@@ -357,7 +336,6 @@ export default function CreatePostsScreen({ navigation }) {
               </KeyboardAvoidingView>
             </View>
             <ButtonWithIcon
-              disabled
               width={70}
               backgroundColor={"#F6F6F6"}
               onPress={() => setState("")}

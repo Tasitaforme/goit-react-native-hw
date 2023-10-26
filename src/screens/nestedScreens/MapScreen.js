@@ -1,12 +1,30 @@
 import { StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import axios from "axios";
 
 export default function MapScreen({ route }) {
   const location = route.params.location;
+  const cityName = route.params.cityName;
 
-  const latitude = location?.latitude ?? 37.78825;
-  const longitude = location?.longitude ?? -122.4324;
+  const [cityNameLocation, setCityNameLocation] = useState("");
+
+  // useEffect(() => {
+  //   async function fetchLocationFromName(city) {
+  //     const URL =
+  //       "https://api.openweathermap.org/data/2.5/weather?appid=9eca7aac0b071aa16e3cb063adba0785tasita&units=metric";
+  //     try {
+  //       const { data } = await axios.get(`${URL}&q=${city}`);
+  //       setCityNameLocation(data.coord);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   fetchLocationFromName(cityName);
+  // }, [cityName]);
+
+  const latitude = cityNameLocation?.lat ?? location?.latitude ?? 50.4501;
+  const longitude = cityNameLocation?.lon ?? location?.longitude ?? 30.5241;
 
   return (
     <View style={styles.container}>
@@ -21,7 +39,7 @@ export default function MapScreen({ route }) {
         }}
         showsUserLocation={true}
         mapType="standard"
-        minZoomLevel={15}
+        minZoomLevel={10}
       >
         <Marker
           title="Це було тут!!!"

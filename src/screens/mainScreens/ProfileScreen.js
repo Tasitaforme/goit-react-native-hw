@@ -8,11 +8,13 @@ import {
   ScrollView,
   SafeAreaView,
   FlatList,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import COLORS from "../../const/colors";
 import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
+
 import { FontAwesome } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
@@ -23,71 +25,98 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout, updateUserPhoto } from "../../redux/auth/authOperations";
 import { auth } from "../../firebase/config";
 import TitleMain from "../../components/TitleMain";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import PostItem from "../../components/Post/PostItem";
+import ButtonWithIcon from "../../components/ButtonWithIcon";
+import {
+  deleteCurrentUser,
+  deletePhotoFromServer,
+  uploadPhotoToServer,
+} from "../../firebase/requests";
 
 export default function ProfileScreen({ navigation }) {
   const dispatch = useDispatch();
 
-  const { user, userId, userPhoto } = useSelector((state) => state.auth);
+  const { user, userId, userPhoto, email, password } = useSelector(
+    (state) => state.auth
+  );
 
-  const [photo, setPhoto] = useState(userPhoto);
   const [pickedPhoto, setPickedPhoto] = useState("");
+  const [needUploadPhoto, setNeedUploadPhoto] = useState(false);
   const [userPosts, setUserPosts] = useState("");
 
   useEffect(() => {
-    const userQuery = query(
+    const q = query(
       collection(db, "posts"),
-      where("owner.userId", "==", userId)
+      where("owner.userId", "==", userId),
+      orderBy("createdAt")
     );
-    onSnapshot(userQuery, (data) => {
+    onSnapshot(q, (data) => {
       const allPosts = data.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       const sortedAllPosts = allPosts.sort((a, b) => b.createdAt - a.createdAt);
       setUserPosts(sortedAllPosts);
     });
   }, []);
 
-  const uploadPhotoToServer = async () => {
-    try {
-      const response = await fetch(pickedPhoto);
-      const file = await response.blob();
-      const uniqPostId = Date.now().toString();
-
-      const imageRef = ref(storage, `userImage/${uniqPostId}`);
-      await uploadBytes(imageRef, file);
-
-      const processedPhoto = await getDownloadURL(imageRef);
-      console.log("processedPhoto", processedPhoto);
-      return processedPhoto;
-    } catch (error) {
-      console.log("error", error.message);
-    }
-  };
-
   const pickPhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
+      aspect: [1, 1],
       quality: 1,
     });
 
     if (!result.canceled) {
       setPickedPhoto(result.assets[0].uri);
-    } else {
-      alert("You did not select any image.");
+      setNeedUploadPhoto(true);
     }
   };
 
-  const updateUserPhoto = async () => {
-    const newUrl = await uploadPhotoToServer();
-    console.log("newUrl", newUrl);
+  const updateCurrentUserPhoto = async () => {
+    const newUrl = await uploadPhotoToServer(pickedPhoto, "userImage");
+
+    if (userPhoto) {
+      deletePhotoFromServer(userPhoto);
+    }
+
     dispatch(updateUserPhoto(newUrl));
-    setPhoto(newUrl);
+    setPickedPhoto("");
+    setNeedUploadPhoto(false);
   };
 
-  // if (pickedPhoto) {
-  //   updateUserPhoto();
-  //   setPickedPhoto("");
-  // }
-
+  const deleteUser = () => {
+    Alert.alert(
+      "Видалення аккаунту",
+      "Ви дійсно бажаєте видалити поточного користувача? \n\nЯкщо користувач новостворений, то зможете його видалити лише після другого входу в додаток )))",
+      [
+        {
+          text: "Так",
+          onPress: () => {
+            deletePhotoFromServer(userPhoto);
+            deleteCurrentUser(email, password);
+            dispatch(logout());
+          },
+        },
+        {
+          text: "Ні",
+          onPress: () =>
+            Alert.alert("Гарний вибір", "Дякуємо за довіру!", [], {
+              cancelable: true,
+            }),
+          style: "cancel",
+          cancelable: true,
+        },
+      ],
+      {
+        cancelable: true,
+      }
+    );
+  };
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -96,7 +125,6 @@ export default function ProfileScreen({ navigation }) {
         style={styles.image}
       >
         <SafeAreaView style={{ flex: 1 }}>
-          {/* <ScrollView style={{ flex: 1 }}> */}
           <View style={styles.wrapper}>
             <View style={styles.wrapperPhoto}>
               <Image
@@ -109,36 +137,38 @@ export default function ProfileScreen({ navigation }) {
                   borderRadius: 16,
                 }}
                 source={
-                  photo
+                  pickedPhoto
+                    ? { uri: pickedPhoto }
+                    : userPhoto
                     ? { uri: userPhoto }
                     : require("../../../assets/images/dummy-user-photo.png")
                 }
                 resizeMode="cover"
               />
 
-              {!photo && (
+              <TouchableOpacity
+                style={styles.btnAddPhoto}
+                activeOpacity={0.8}
+                onPress={pickPhoto}
+              >
+                <AntDesign name="pluscircleo" size={24} color={COLORS.accent} />
+              </TouchableOpacity>
+
+              {needUploadPhoto && (
                 <TouchableOpacity
-                  style={styles.btnAddPhoto}
+                  style={styles.btnUploadPhoto}
                   activeOpacity={0.8}
-                  onPress={pickPhoto}
+                  onPress={updateCurrentUserPhoto}
                 >
                   <AntDesign
-                    name="pluscircleo"
+                    name="checkcircle"
                     size={24}
                     color={COLORS.accent}
                   />
                 </TouchableOpacity>
               )}
-              {photo && (
-                <TouchableOpacity
-                  style={styles.btnAddPhoto}
-                  activeOpacity={0.8}
-                  onPress={pickPhoto}
-                >
-                  <AntDesign name="closecircleo" size={24} color="#BDBDBD" />
-                </TouchableOpacity>
-              )}
             </View>
+
             <TouchableOpacity
               style={{
                 marginTop: 22,
@@ -150,11 +180,13 @@ export default function ProfileScreen({ navigation }) {
             >
               <Feather name="log-out" size={24} color="#212121" />
             </TouchableOpacity>
-            <TitleMain text={user} marginTop={32} />
+
+            <TitleMain text={user} marginTop={28} />
+
             <View
               style={{
                 width: "100%",
-                marginTop: 32,
+                marginTop: 12,
                 flexDirection: "column",
                 gap: 32,
               }}
@@ -163,89 +195,31 @@ export default function ProfileScreen({ navigation }) {
                 data={userPosts}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                  <View
-                    style={{ width: "100%", marginBottom: 18, flexGrow: 1 }}
-                  >
-                    <Image
-                      style={{
-                        height: 240,
-                        width: "100%",
-                        borderRadius: 16,
-                        flexShrink: 0,
-                      }}
-                      source={{ uri: item.photo }}
-                      resizeMode="cover"
-                    />
-                    <Text style={styles.itemTitle}>{item.title}</Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingHorizontal: 8,
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableOpacity
-                        style={{ flexDirection: "row", gap: 24 }}
-                        onPress={() =>
-                          navigation.navigate("Comments", {
-                            postId: item.id,
-                            photo: item.photo,
-                          })
-                        }
-                      >
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            gap: 6,
-                            alignItems: "center",
-                          }}
-                        >
-                          <FontAwesome
-                            name="comment"
-                            size={24}
-                            color={COLORS.accent}
-                          />
-                          <Text style={styles.itemText}>8</Text>
-                        </View>
-                        <View style={{ flexDirection: "row", gap: 6 }}>
-                          <AntDesign
-                            name="like2"
-                            size={24}
-                            color={COLORS.accent}
-                          />
-                          <Text style={styles.itemText}>150</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={{ flexDirection: "row", gap: 6 }}
-                        onPress={() => {
-                          navigation.navigate("Map", {
-                            location: item.coordinates,
-                          });
-                        }}
-                      >
-                        <SimpleLineIcons
-                          name="location-pin"
-                          size={24}
-                          color={COLORS.accent}
-                        />
-                        <Text
-                          style={{
-                            ...styles.itemText,
-                            textDecorationLine: "underline",
-                          }}
-                        >
-                          {item.location}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                  <PostItem
+                    key={item.id}
+                    postId={item.id}
+                    title={item.title}
+                    uri={item.photo}
+                    postLocation={item.location}
+                    photoLocation={item.coordinates}
+                    screen={"ProfileScreen"}
+                  />
                 )}
+                ListFooterComponent={
+                  <ButtonWithIcon
+                    width={"100%"}
+                    height={50}
+                    backgroundColor={COLORS.darkWP}
+                    onPress={deleteUser}
+                    marginTop={24}
+                    marginBottom={24}
+                  >
+                    <AntDesign name="delete" size={24} color="#fff" />
+                  </ButtonWithIcon>
+                }
               />
             </View>
           </View>
-          {/* </ScrollView> */}
         </SafeAreaView>
       </ImageBackground>
     </View>
@@ -291,7 +265,14 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: "#fff",
   },
+  btnUploadPhoto: {
+    position: "absolute",
+    top: 12,
+    right: -12,
 
+    borderRadius: 100,
+    backgroundColor: "#fff",
+  },
   itemTitle: {
     color: "#212121",
     fontFamily: "Roboto-Medium",

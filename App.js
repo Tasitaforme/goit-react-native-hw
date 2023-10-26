@@ -1,27 +1,17 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { View } from "react-native";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 import "react-native-gesture-handler";
 
-import { Ionicons } from "@expo/vector-icons";
-
-import LoginScreen from "./src/screens/authScreens/LoginScreen";
-import RegistrationScreen from "./src/screens/authScreens/RegistrationScreen";
-import Home from "./src/screens/mainScreens/Home";
-
-import CommentsScreen from "./src/screens/nestedScreens/CommentsScreen";
-import MapScreen from "./src/screens/nestedScreens/MapScreen";
-import { Provider } from "react-redux";
-import { store } from "./src/redux/store";
+import { persistor, store } from "./src/redux/store";
 import Main from "./src/components/Main/Main";
 
 SplashScreen.preventAutoHideAsync();
-const Stack = createStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -36,21 +26,23 @@ export default function App() {
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      console.log("Шрифти завантажені");
+      // console.log("Шрифти завантажені");
       await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
-    console.log("Шрифти не завантажені");
+    // console.log("Шрифти не завантажені");
     return null;
   }
 
   return (
     <Provider store={store}>
-      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <Main />
-      </View>
+      <PersistGate loading={null} persistor={persistor}>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <Main />
+        </View>
+      </PersistGate>
     </Provider>
   );
 }

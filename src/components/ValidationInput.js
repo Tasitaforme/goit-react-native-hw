@@ -36,6 +36,7 @@ export default function ValidationInput({
             ? [styles.input, { borderColor: COLORS.accent }]
             : styles.input
         }
+        textTransform={name == "email" ? "lowercase" : ""}
         placeholder={placeholder}
         value={value}
         onFocus={() => {

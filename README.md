@@ -39,6 +39,10 @@ Expo дає змогу за відсутності MacOS тестувати до
 
 [Xcode](https://apps.apple.com/ua/app/xcode/id497799835?mt=12) (для власників MacOS) — для тестування iOS додатків.
 
+## Дебаг додатку
+
+[Debugging Basics](https://reactnative.dev/docs/debugging)
+
 ## Cтилізація
 
 [Core Components and APIs](https://reactnative.dev/docs/components-and-apis)
@@ -46,8 +50,6 @@ Expo дає змогу за відсутності MacOS тестувати до
 [Layout with Flexbox](https://reactnative.dev/docs/flexbox?language=javascript)
 
 [Color Reference](https://reactnative.dev/docs/colors)
-
-[Debugging Basics](https://reactnative.dev/docs/debugging)
 
 ### Стилізація, залежно від платформи
 
@@ -221,7 +223,7 @@ const Register = ({ navigation }) => {
 };
 ```
 
-1. У вкладених компонентах є спеціальні хуки, які витягують із контексту навігації необхідні нам функції та параметри.
+2. У вкладених компонентах є спеціальні хуки, які витягують із контексту навігації необхідні нам функції та параметри.
 
 ```js
 import { useNavigation } from "@react-navigation/native";
@@ -333,6 +335,12 @@ npx expo install expo-camera
 npx expo install expo-media-library
 ```
 
+## [Доступ до галереї - ImagePicker](https://docs.expo.dev/versions/latest/sdk/imagepicker/)
+
+```bash
+npx expo install expo-image-picker
+```
+
 ## [Геолокація](https://docs.expo.dev/versions/latest/sdk/location/)
 
 ```bash
@@ -365,22 +373,6 @@ npx expo install expo-blur
 import { BlurView } from "expo-blur";
 ```
 
-### Документація
-
-[FlatList](https://reactnative.dev/docs/flatlist)
-[Expo Image Picker](https://docs.expo.dev/tutorial/image-picker/)
-[Supporting safe areas](https://reactnavigation.org/docs/handling-safe-area/)
-[react-native-gifted-chat](https://www.npmjs.com/package/react-native-gifted-chat?activeTab=readme)
-
-```bash
-npm i react-native-gifted-chat
-```
-
-```js
-import { GiftedChat } from "react-native-gifted-chat";
-<GiftedChat wrapInSafeArea={false}></GiftedChat>;
-```
-
 ## [Redux](https://redux.js.org/introduction/getting-started) та [redux-persist](https://redux.js.org/usage/migrating-to-modern-redux#store-setup-with-configurestore)
 
 ```bash
@@ -388,13 +380,57 @@ npm install @reduxjs/toolkit react-redux redux-persist
 npx expo install @react-native-async-storage/async-storage
 ```
 
+> Налаштовується редакс та редакс-персіст так само, як і у веб, за однією різницею - необхідно використовувати AsyncStorage з щойно встановленної бібліотеки
+
 ```js
+//store.js
+import { configureStore } from "@reduxjs/toolkit";
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import rootReducer from "./rootReducer";
+
+const persistConfig = {
+  key: "root",
+  storage: AsyncStorage,
+};
+
+const reducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
+
+export const persistor = persistStore(store);
+```
+
+Обгортаємо наш додаток у Provider та PersistGate та передаємо їм відповідні обʼєкти.
+
+```js
+//App.js
 import { Provider } from "react-redux";
-import store from "./src/redux/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor, store } from "./src/redux/store";
 
 return (
   <Provider store={store}>
-    <NavigationContainer>... </NavigationContainer>
+    <PersistGate loading={null} persistor={persistor}>
+      <NavigationContainer>... </NavigationContainer>
+    </PersistGate>
   </Provider>
 );
 ```
@@ -417,7 +453,7 @@ npx expo customize metro.config.js
 
 > React Native CLI + firebase = [React Native Firebase](https://rnfirebase.io/)
 
-[Firebase Authentication](https://firebase.google.com/docs/auth?authuser=0&hl=en)
+[Firebase Authentication](https://firebase.google.com/docs/auth?authuser=0&hl=en)  
 [updateProfile](https://firebase.google.com/docs/auth/web/manage-users#update_a_users_profile)
 
 ## [Moment.js](https://momentjs.com/)
@@ -436,3 +472,9 @@ moment().format();
 ```
 
 [Loading locales in NodeJS](https://momentjs.com/docs/#/i18n/loading-into-nodejs/)
+
+### Додаткова документація
+
+[FlatList](https://reactnative.dev/docs/flatlist)  
+[Expo Image Picker](https://docs.expo.dev/tutorial/image-picker/)  
+[Supporting safe areas](https://reactnavigation.org/docs/handling-safe-area/)

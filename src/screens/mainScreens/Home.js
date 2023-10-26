@@ -69,11 +69,13 @@ export default function Home({ navigation }) {
               </TouchableOpacity>
             ),
             tabBarIcon: ({ focused }) => (
-              <AntDesign
-                name="appstore-o"
-                size={24}
-                color={focused ? "#212121" : "rgba(33, 33, 33, 0.60)"}
-              />
+              <View style={focused ? styles.button : ""}>
+                <AntDesign
+                  name="appstore-o"
+                  size={24}
+                  color={focused ? "#fff" : "#212121"}
+                />
+              </View>
             ),
           }}
         />
@@ -83,8 +85,12 @@ export default function Home({ navigation }) {
           options={{
             title: "Створити публікацію",
             tabBarIcon: ({ focused, color, size }) => (
-              <View style={styles.button}>
-                <Ionicons name="add" size={24} color="#fff" />
+              <View style={styles.buttonAdd}>
+                <Ionicons
+                  name="add"
+                  size={24}
+                  color={Platform.OS === "ios" ? "#00bfff" : "#FF6C00"}
+                />
               </View>
             ),
             tabBarStyle: { display: "none" },
@@ -107,11 +113,13 @@ export default function Home({ navigation }) {
           options={{
             headerShown: false,
             tabBarIcon: ({ focused, color, size }) => (
-              <Feather
-                name="user"
-                size={24}
-                color={focused ? "#212121" : "rgba(33, 33, 33, 0.60)"}
-              />
+              <View style={focused ? styles.button : ""}>
+                <Feather
+                  name="user"
+                  size={24}
+                  color={focused ? "#fff" : "#212121"}
+                />
+              </View>
             ),
           }}
         />
@@ -129,5 +137,15 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     flexShrink: 0,
     width: 72,
+  },
+  buttonAdd: {
+    padding: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 100,
+    flexShrink: 0,
+    width: 72,
+    borderColor: Platform.OS === "ios" ? "#00bfff" : "#FF6C00",
+    borderWidth: 1,
   },
 });

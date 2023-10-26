@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import Button from "../../components/Button";
 import Link from "../../components/Link";
@@ -19,8 +19,7 @@ import ValidationInput from "../../components/ValidationInput";
 import { useDispatch } from "react-redux";
 import { register } from "../../redux/auth/authOperations";
 import COLORS from "../../const/colors";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../firebase/config";
+import { uploadPhotoToServer } from "../../firebase/requests";
 
 const initialState = {
   user: "",
@@ -46,11 +45,6 @@ export default function RegistrationScreen({ navigation }) {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
-
-  // function handleSubmit() {
-  //   keyboardHide();
-  //   validate();
-  // }
 
   const validate = () => {
     let isValid = true;
@@ -84,15 +78,6 @@ export default function RegistrationScreen({ navigation }) {
       handleError("Min password length of 6", "password");
       isValid = false;
     }
-
-    // if (isValid) {
-    //   console.log(state);
-
-    //   // dispatch(register(state));
-    //   // setState(initialState);
-    //   // setPhoto(null);
-    //   // navigation.navigate("Home");
-    // }
   };
   const handleOnchange = (text, input) => {
     setState((prevState) => ({ ...prevState, [input]: text }));
@@ -100,47 +85,29 @@ export default function RegistrationScreen({ navigation }) {
   const handleError = (error, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
-  //!++++++++++++++++++++++++++++
+
   const pickPhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
+      aspect: [1, 1],
       quality: 1,
     });
 
     if (!result.canceled) {
       setPhoto(result.assets[0].uri);
-      // handleOnchange(result.assets[0].uri, "userPhoto");
     } else {
-      alert("You did not select any image.");
-    }
-  };
-
-  const uploadPhotoToServer = async () => {
-    try {
-      const response = await fetch(photo);
-      const file = await response.blob();
-      const uniqPostId = Date.now().toString();
-
-      const imageRef = ref(storage, `userImage/${uniqPostId}`);
-      await uploadBytes(imageRef, file);
-
-      const processedPhoto = await getDownloadURL(imageRef);
-      return processedPhoto;
-    } catch (error) {
-      console.log("error", error.message);
+      alert("Ви не вибрали жодного зображення...");
     }
   };
 
   const handleSubmit = async () => {
     keyboardHide();
-    const userPhoto = photo ? await uploadPhotoToServer() : "";
-    // console.log(userPhoto);
+    const userPhoto = photo
+      ? await uploadPhotoToServer(photo, "userImage")
+      : "";
     state.userPhoto = userPhoto;
     validate();
     dispatch(register(state));
-    // console.log("after validate", state);
-    // console.log(state.user, state.email, state.password, userPhoto);
-    // dispatch(register(state.user, state.email, state.password, userPhoto));
     setState(initialState);
     setPhoto(null);
   };

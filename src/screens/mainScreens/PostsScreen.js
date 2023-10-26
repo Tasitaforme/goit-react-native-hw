@@ -1,30 +1,23 @@
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import COLORS from "../../const/colors";
 import { StatusBar } from "expo-status-bar";
-import { AntDesign } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import { SimpleLineIcons } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
-import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
+
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useSelector } from "react-redux";
+import PostItem from "../../components/Post/PostItem";
+import COLORS from "../../const/colors";
 
 export default function PostsScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
   const { user, userPhoto, email } = useSelector((state) => state.auth);
 
   const getAllPost = () => {
-    onSnapshot(collection(db, "posts"), (data) => {
+    const q = query(collection(db, "posts"));
+    onSnapshot(q, (data) => {
       const allPosts = data.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setPosts(allPosts);
+      const sortedAllPosts = allPosts.sort((a, b) => b.createdAt - a.createdAt);
+      setPosts(sortedAllPosts);
     });
   };
 
@@ -77,7 +70,7 @@ export default function PostsScreen({ route, navigation }) {
             </Text>
             <Text
               style={{
-                color: "rgba(33, 33, 33, 0.80)",
+                color: COLORS.darkWP,
                 fontFamily: "Roboto-Regular",
                 fontWeight: "400",
                 fontSize: 12,
@@ -101,81 +94,15 @@ export default function PostsScreen({ route, navigation }) {
             data={posts}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={{ width: "100%", marginBottom: 18, flexGrow: 1 }}>
-                <Image
-                  style={{
-                    height: 240,
-                    width: "100%",
-                    borderRadius: 16,
-                    flexShrink: 0,
-                  }}
-                  source={{ uri: item.photo }}
-                  resizeMode="cover"
-                />
-                <Text style={styles.itemTitle}>{item.title}</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 8,
-                    alignItems: "center",
-                  }}
-                >
-                  <TouchableOpacity
-                    style={{ flexDirection: "row", gap: 24 }}
-                    onPress={() =>
-                      navigation.navigate("Comments", {
-                        postId: item.id,
-                        photo: item.photo,
-                      })
-                    }
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        gap: 6,
-                        alignItems: "center",
-                      }}
-                    >
-                      <FontAwesome
-                        name="comment"
-                        size={24}
-                        color={COLORS.accent}
-                      />
-                      <Text style={styles.itemText}>8</Text>
-                    </View>
-                    <View style={{ flexDirection: "row", gap: 6 }}>
-                      <AntDesign name="like2" size={24} color={COLORS.accent} />
-                      <Text style={styles.itemText}>150</Text>
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      gap: 6,
-                    }}
-                    onPress={() => {
-                      navigation.navigate("Map", {
-                        location: item.coordinates,
-                      });
-                    }}
-                  >
-                    <SimpleLineIcons
-                      name="location-pin"
-                      size={24}
-                      color={COLORS.accent}
-                    />
-                    <Text
-                      style={{
-                        ...styles.itemText,
-                        textDecorationLine: "underline",
-                      }}
-                    >
-                      {item.location}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+              <PostItem
+                key={item.id}
+                postId={item.id}
+                title={item.title}
+                uri={item.photo}
+                postLocation={item.location}
+                photoLocation={item.coordinates}
+                screen={"PostsScreen"}
+              />
             )}
           />
         </View>
@@ -188,22 +115,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  itemTitle: {
-    color: "#212121",
-    fontFamily: "Roboto-Medium",
-    fontWeight: "500",
-    fontSize: 16,
-    lineHeight: 16,
-    marginTop: 12,
-    marginBottom: 4,
-    paddingHorizontal: 8,
-  },
-  itemText: {
-    color: "#212121",
-    fontFamily: "Roboto-Regular",
-    fontWeight: "400",
-    fontSize: 16,
-    lineHeight: 24,
   },
 });

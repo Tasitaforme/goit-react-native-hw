@@ -33,11 +33,9 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor: Platform.OS === "ios" ? "#00bfff" : "#FF6C00",
     borderRadius: 100,
   },
   btnTitle: {
-    // color: "#fff",
     fontSize: 16,
     fontFamily: "Roboto-Regular",
   },

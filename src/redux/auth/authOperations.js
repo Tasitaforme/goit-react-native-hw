@@ -37,12 +37,12 @@ export const login =
   async () => {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      console.log("user", user);
     } catch (error) {
       console.log(error.message);
       return error.message;
     }
   };
+
 export const logout = () => async (dispatch) => {
   await signOut(auth);
   dispatch(authSlice.actions.authSignOut());
@@ -66,11 +66,18 @@ export const authStateChangeUser = () => async (dispatch) => {
 
 export const updateUserPhoto = (photo) => async (dispatch) => {
   try {
-    await updateProfile(auth.currentUser, {
+    const user = auth.currentUser;
+
+    await updateProfile(user, {
       photoURL: photo,
     });
 
-    const { uid, displayName, photoURL, email: emailBase } = auth.currentUser;
+    const {
+      uid,
+      displayName,
+      photoURL,
+      email: emailBase,
+    } = await auth.currentUser;
 
     const userUpdateProfile = {
       userId: uid,
