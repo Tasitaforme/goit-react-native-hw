@@ -1,3 +1,21 @@
+![preview-hw](/preview.jpg)
+
+# PHOTO PROJECT (APP)
+
+**Індивідуальний проект.**
+
+**Назва:** "Покажи свій світ".
+
+**Опис:** додаток в якому можна поділитись своїми фотопостами та погледіти на пости інших користувачів.
+
+**Ціль:** розробка додатка з авторизацією, в якому можна поділитись своїми фотопостами та погледіти на пости інших користувачів.
+
+**Навички:** React Native, Redux, JavaScript, CSS, Expo, Firebase.
+
+---
+
+# КОРИСНІ ПОСИЛАННЯ
+
 ## [React Native](https://reactnative.dev/)
 
 [ES7+ React/Redux/React-Native snippets](https://github.com/ults-io/vscode-react-javascript-snippets/blob/HEAD/docs/Snippets.md#react-native-components)
