@@ -18,7 +18,7 @@
 
 Є два способи встановлення:
 
-1. Bідкрийте це [посилання](https://expo.dev/accounts/tasita/projects/PhotoProject/builds/19775e43-86a7-47f9-afea-392a0cb94616) на своїх пристроях Android і натисніть **Install**
+1. Bідкрийте це [посилання](https://expo.dev//accounts/tasita/projects/PhotoProject/builds/5ef37e3f-124a-465b-a5f7-ef0a35f8081f) на своїх пристроях Android і натисніть **Install**
 2. Відскануйте цей QR-код за допомогою камери свого пристрою і натисніть **Install**. Іноді рідні браузери Android не підтримують завантаження, тож потрібно відкривати через Google Chrome.
 
 ![preview-hw](/QR-code.png)
@@ -529,3 +529,40 @@ eas build --profile development --platform android
 ```
 
 > Команда для перевірки, чи залогінені ви вже: `eas whoami`
+
+Файл `eas.json` повинен буди схожим на цей:
+
+```json
+{
+  "cli": {
+    "version": ">= 5.5.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": "true"
+      },
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}
+```
+
+Якщо ні, то можна конфігурувати і потім визвати команду:
+
+```bash
+eas build -p android --profile preview
+```
+
+Детально можна почитати [тут](https://docs.expo.dev/build-reference/apk/)

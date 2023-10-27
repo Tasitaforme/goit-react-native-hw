@@ -152,7 +152,7 @@ export default function PostItem({
             flexDirection: "row",
             gap: 6,
           }}
-          onPress={() => {
+          onLongPress={() => {
             navigation.navigate("Map", {
               location: photoLocation,
               cityName: postLocation,
