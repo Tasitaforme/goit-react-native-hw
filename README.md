@@ -18,7 +18,7 @@
 
 Є два способи встановлення:
 
-1. Bідкрийте це [посилання](https://expo.dev//accounts/tasita/projects/PhotoProject/builds/5ef37e3f-124a-465b-a5f7-ef0a35f8081f) на своїх пристроях Android і натисніть **Install**
+1. Bідкрийте це [посилання](https://expo.dev//accounts/tasita/projects/PhotoProject/builds/b0dea0e7-dc78-4817-97f6-b3a05c553830) на своїх пристроях Android і натисніть **Install**
 2. Відскануйте цей QR-код за допомогою камери свого пристрою і натисніть **Install**. Іноді рідні браузери Android не підтримують завантаження, тож потрібно відкривати через Google Chrome.
 
 ![preview-hw](/QR-code.png)
